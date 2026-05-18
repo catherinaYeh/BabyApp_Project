@@ -1,0 +1,812 @@
+openapi: 3.1.0
+info:
+  title: Baby Weaning Gamified Tracker API
+  version: 1.0.0
+  description: |
+    REST API for the **寶寶副食品試敏小遊戲** (Baby Weaning Gamified Tracker).
+    無認證單裝置版本，所有資源以 `babyId` 為 scope。
+    錯誤格式遵循 RFC 7807 (application/problem+json)。
+  contact:
+    name: BabyApp Team
+    email: samuel325365@gmail.com
+servers:
+  - url: http://localhost:3000/api/v1
+    description: Local development
+  - url: https://api.babyapp.example.com/v1
+    description: Production
+tags:
+  - name: Babies
+    description: 寶寶檔案 CRUD 與切換
+  - name: Foods
+    description: 食材圖鑑 (系統預載 + 使用者自訂)
+  - name: Feedings
+    description: 餵食紀錄 CRUD + CSV 批次匯入
+  - name: Trials
+    description: 試敏狀態 (依紀錄自動推導)
+  - name: Achievements
+    description: 徽章定義與解鎖紀錄
+  - name: Dashboard
+    description: 首頁總覽與進度
+  - name: Health
+    description: 健康檢查
+
+paths:
+  # ───────────────────────────────  HEALTH  ───────────────────────────────
+  /healthz:
+    get:
+      tags: [Health]
+      summary: Liveness / readiness probe
+      operationId: getHealth
+      responses:
+        '200':
+          description: API up & DB reachable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+
+  # ───────────────────────────────  BABIES  ───────────────────────────────
+  /babies:
+    get:
+      tags: [Babies]
+      summary: List babies
+      operationId: listBabies
+      parameters:
+        - $ref: '#/components/parameters/CursorParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: A list of babies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BabyListResponse'
+        '500': { $ref: '#/components/responses/InternalError' }
+    post:
+      tags: [Babies]
+      summary: Create a baby
+      operationId: createBaby
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BabyCreate' }
+      responses:
+        '201':
+          description: Baby created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Baby' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /babies/{babyId}:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    get:
+      tags: [Babies]
+      summary: Get a baby by ID
+      operationId: getBaby
+      responses:
+        '200':
+          description: Baby
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Baby' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Babies]
+      summary: Update a baby
+      operationId: updateBaby
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BabyUpdate' }
+      responses:
+        '200':
+          description: Updated baby
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Baby' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Babies]
+      summary: Delete a baby (cascade feedings & unlocks)
+      operationId: deleteBaby
+      responses:
+        '204': { description: Deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ────────────────────────────────  FOODS  ────────────────────────────────
+  /foods:
+    get:
+      tags: [Foods]
+      summary: List food items (system + user)
+      operationId: listFoods
+      parameters:
+        - in: query
+          name: category
+          schema: { $ref: '#/components/schemas/FoodCategory' }
+        - in: query
+          name: allergyRisk
+          schema: { $ref: '#/components/schemas/AllergyRisk' }
+        - in: query
+          name: search
+          schema: { type: string }
+          description: 名稱模糊搜尋 (icontains)
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [risk_asc, risk_desc, name_asc, name_desc]
+            default: risk_asc
+        - $ref: '#/components/parameters/CursorParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of foods
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FoodListResponse' }
+    post:
+      tags: [Foods]
+      summary: Create a custom food item
+      operationId: createFood
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FoodCreate' }
+      responses:
+        '201':
+          description: Food created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FoodItem' }
+        '409':
+          description: Name already exists
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /foods/{foodId}:
+    parameters: [ { $ref: '#/components/parameters/FoodIdParam' } ]
+    get:
+      tags: [Foods]
+      summary: Get a food item
+      operationId: getFood
+      responses:
+        '200':
+          description: Food
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FoodItem' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Foods]
+      summary: Update a food (system foods cannot be edited)
+      operationId: updateFood
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FoodUpdate' }
+      responses:
+        '200':
+          description: Updated food
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FoodItem' }
+        '403':
+          description: System food is read-only
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Foods]
+      summary: Delete a food (system foods cannot be deleted)
+      operationId: deleteFood
+      responses:
+        '204': { description: Deleted }
+        '403':
+          description: System food is read-only
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: Food is referenced by feeding records
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+  # ──────────────────────────────  FEEDINGS  ──────────────────────────────
+  /babies/{babyId}/feedings:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    get:
+      tags: [Feedings]
+      summary: List feeding records of a baby
+      operationId: listFeedings
+      parameters:
+        - in: query
+          name: view
+          description: 將 from/to 自動套用為當週或當月區間
+          schema:
+            type: string
+            enum: [week, month]
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+        - in: query
+          name: foodId
+          schema: { type: string, format: uuid }
+        - in: query
+          name: reaction
+          schema: { $ref: '#/components/schemas/Reaction' }
+        - $ref: '#/components/parameters/CursorParam'
+        - $ref: '#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: Feedings
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FeedingListResponse' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    post:
+      tags: [Feedings]
+      summary: Create a feeding record
+      operationId: createFeeding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FeedingCreate' }
+      responses:
+        '201':
+          description: Feeding created (含同步解鎖的徽章)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FeedingCreateResponse' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: Duplicate (babyId, foodId, fedAt)
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+
+  /babies/{babyId}/feedings/{feedingId}:
+    parameters:
+      - $ref: '#/components/parameters/BabyIdParam'
+      - $ref: '#/components/parameters/FeedingIdParam'
+    get:
+      tags: [Feedings]
+      summary: Get a feeding record
+      operationId: getFeeding
+      responses:
+        '200':
+          description: Feeding
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FeedingRecord' }
+        '404': { $ref: '#/components/responses/NotFound' }
+    patch:
+      tags: [Feedings]
+      summary: Update a feeding record
+      operationId: updateFeeding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FeedingUpdate' }
+      responses:
+        '200':
+          description: Updated feeding
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FeedingRecord' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/ValidationError' }
+    delete:
+      tags: [Feedings]
+      summary: Delete a feeding record
+      operationId: deleteFeeding
+      responses:
+        '204': { description: Deleted }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /babies/{babyId}/feedings:import:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    post:
+      tags: [Feedings]
+      summary: Batch import feeding records from CSV (skip on conflict)
+      operationId: importFeedingsCsv
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: |
+                    UTF-8 CSV, 標頭：food_name,fed_at,amount_ml,reaction,note
+                    最大 2MB / 5000 列
+                dryRun:
+                  type: boolean
+                  default: false
+                  description: 不寫入資料庫，只回報結果
+      responses:
+        '200':
+          description: Import summary
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CsvImportResult' }
+        '400':
+          description: 檔案格式錯誤 / 超過大小限制
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ────────────────────────────────  TRIALS  ───────────────────────────────
+  /babies/{babyId}/trials:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    get:
+      tags: [Trials]
+      summary: 該寶寶對每種食材的試敏狀態 (從 materialized view 讀取)
+      operationId: listTrials
+      parameters:
+        - in: query
+          name: status
+          schema: { $ref: '#/components/schemas/TrialStatus' }
+        - in: query
+          name: category
+          schema: { $ref: '#/components/schemas/FoodCategory' }
+      responses:
+        '200':
+          description: Trial states
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/TrialState' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /babies/{babyId}/recommendations:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    get:
+      tags: [Trials]
+      summary: 建議下一個嘗試的食材（低敏優先 + 多元類別）
+      operationId: getRecommendations
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 20, default: 5 }
+      responses:
+        '200':
+          description: Recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/FoodItem' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ─────────────────────────────  ACHIEVEMENTS  ─────────────────────────────
+  /achievements:
+    get:
+      tags: [Achievements]
+      summary: 列出所有徽章定義
+      operationId: listAchievements
+      responses:
+        '200':
+          description: Achievements
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/Achievement' }
+
+  /babies/{babyId}/achievements:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    get:
+      tags: [Achievements]
+      summary: 該寶寶已解鎖徽章與所有徽章狀態
+      operationId: listBabyAchievements
+      responses:
+        '200':
+          description: Achievement progress per baby
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: { $ref: '#/components/schemas/BabyAchievement' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  # ──────────────────────────────  DASHBOARD  ──────────────────────────────
+  /babies/{babyId}/dashboard:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    get:
+      tags: [Dashboard]
+      summary: 首頁總覽（狀態計數 + 最近徽章 + 推薦）
+      operationId: getDashboard
+      responses:
+        '200':
+          description: Dashboard payload
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Dashboard' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /babies/{babyId}/progress:
+    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    get:
+      tags: [Dashboard]
+      summary: 試敏破關進度（unlocked / total，可分 category）
+      operationId: getProgress
+      responses:
+        '200':
+          description: Progress
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Progress' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+# ──────────────────────────────  COMPONENTS  ──────────────────────────────
+components:
+  parameters:
+    BabyIdParam:
+      name: babyId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    FoodIdParam:
+      name: foodId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    FeedingIdParam:
+      name: feedingId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    CursorParam:
+      name: cursor
+      in: query
+      schema: { type: string }
+      description: 由上一頁回應 meta.nextCursor 取得
+    LimitParam:
+      name: limit
+      in: query
+      schema: { type: integer, minimum: 1, maximum: 100, default: 20 }
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    ValidationError:
+      description: Validation failed
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/ValidationProblem' }
+    InternalError:
+      description: Unexpected server error
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+  schemas:
+    # ── Enums ────────────────────────────────────────────────────────────
+    FoodCategory:
+      type: string
+      enum: [VEGETABLE, MUSHROOM, FRUIT, SEAFOOD, MEAT, EGG, DAIRY, GRAIN, NUT, OTHER]
+    AllergyRisk:
+      type: string
+      enum: [LOW, MEDIUM, HIGH]
+      description: 低敏 / 中敏 / 高敏
+    Reaction:
+      type: string
+      enum: [NONE, MILD, SEVERE]
+    TrialStatus:
+      type: string
+      enum: [UNTRIED, TRYING, UNLOCKED, ALLERGIC]
+
+    # ── Pagination ──────────────────────────────────────────────────────
+    PaginationMeta:
+      type: object
+      properties:
+        nextCursor: { type: string, nullable: true }
+        total:      { type: integer }
+
+    # ── Health ───────────────────────────────────────────────────────────
+    Health:
+      type: object
+      required: [status, db, version]
+      properties:
+        status:  { type: string, enum: [ok] }
+        db:      { type: string, enum: [ok, down] }
+        version: { type: string }
+
+    # ── Baby ─────────────────────────────────────────────────────────────
+    Baby:
+      type: object
+      required: [id, name, birthDate, ageMonth, avatarColor, createdAt]
+      properties:
+        id:           { type: string, format: uuid }
+        name:         { type: string, minLength: 1, maxLength: 30 }
+        birthDate:    { type: string, format: date }
+        ageMonth:     { type: integer, description: 動態計算 }
+        avatarColor:  { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
+        createdAt:    { type: string, format: date-time }
+        updatedAt:    { type: string, format: date-time }
+    BabyCreate:
+      type: object
+      required: [name, birthDate]
+      properties:
+        name:        { type: string, minLength: 1, maxLength: 30 }
+        birthDate:   { type: string, format: date }
+        avatarColor: { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
+    BabyUpdate:
+      type: object
+      properties:
+        name:        { type: string, minLength: 1, maxLength: 30 }
+        birthDate:   { type: string, format: date }
+        avatarColor: { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
+    BabyListResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/Baby' } }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+
+    # ── FoodItem ─────────────────────────────────────────────────────────
+    FoodItem:
+      type: object
+      required: [id, name, category, allergyRisk, isSystem, createdAt]
+      properties:
+        id:          { type: string, format: uuid }
+        name:        { type: string, minLength: 1, maxLength: 30 }
+        category:    { $ref: '#/components/schemas/FoodCategory' }
+        allergyRisk: { $ref: '#/components/schemas/AllergyRisk' }
+        isSystem:    { type: boolean }
+        createdAt:   { type: string, format: date-time }
+        updatedAt:   { type: string, format: date-time }
+    FoodCreate:
+      type: object
+      required: [name, category, allergyRisk]
+      properties:
+        name:        { type: string, minLength: 1, maxLength: 30 }
+        category:    { $ref: '#/components/schemas/FoodCategory' }
+        allergyRisk: { $ref: '#/components/schemas/AllergyRisk' }
+    FoodUpdate:
+      type: object
+      properties:
+        name:        { type: string, minLength: 1, maxLength: 30 }
+        category:    { $ref: '#/components/schemas/FoodCategory' }
+        allergyRisk: { $ref: '#/components/schemas/AllergyRisk' }
+    FoodListResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/FoodItem' } }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+
+    # ── FeedingRecord ────────────────────────────────────────────────────
+    FeedingRecord:
+      type: object
+      required: [id, babyId, foodId, fedAt, amountMl, attemptCount, reaction, createdAt]
+      properties:
+        id:           { type: string, format: uuid }
+        babyId:       { type: string, format: uuid }
+        foodId:       { type: string, format: uuid }
+        food:
+          allOf:
+            - $ref: '#/components/schemas/FoodItem'
+          description: 由後端 inline 展開
+        fedAt:        { type: string, format: date-time }
+        amountMl:     { type: integer, minimum: 1, maximum: 1000 }
+        attemptCount: { type: integer, minimum: 1 }
+        reaction:     { $ref: '#/components/schemas/Reaction' }
+        note:         { type: string, nullable: true, maxLength: 500 }
+        createdAt:    { type: string, format: date-time }
+    FeedingCreate:
+      type: object
+      required: [foodId, fedAt, amountMl]
+      properties:
+        foodId:    { type: string, format: uuid }
+        fedAt:     { type: string, format: date-time }
+        amountMl:  { type: integer, minimum: 1, maximum: 1000 }
+        reaction:  { $ref: '#/components/schemas/Reaction', default: NONE }
+        note:      { type: string, maxLength: 500 }
+    FeedingUpdate:
+      type: object
+      properties:
+        fedAt:     { type: string, format: date-time }
+        amountMl:  { type: integer, minimum: 1, maximum: 1000 }
+        reaction:  { $ref: '#/components/schemas/Reaction' }
+        note:      { type: string, maxLength: 500 }
+    FeedingListResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/FeedingRecord' } }
+        meta: { $ref: '#/components/schemas/PaginationMeta' }
+    FeedingCreateResponse:
+      type: object
+      required: [feeding, newlyUnlockedAchievements]
+      properties:
+        feeding: { $ref: '#/components/schemas/FeedingRecord' }
+        trial:   { $ref: '#/components/schemas/TrialState' }
+        newlyUnlockedAchievements:
+          type: array
+          items: { $ref: '#/components/schemas/Achievement' }
+
+    # ── CSV Import ───────────────────────────────────────────────────────
+    CsvImportResult:
+      type: object
+      required: [imported, skipped, errors]
+      properties:
+        imported: { type: integer, description: 成功匯入列數 }
+        skipped:  { type: integer, description: 因衝突跳過列數 }
+        errors:
+          type: array
+          items:
+            type: object
+            required: [row, message]
+            properties:
+              row:     { type: integer }
+              message: { type: string }
+              raw:     { type: object, additionalProperties: true }
+
+    # ── Trial State ──────────────────────────────────────────────────────
+    TrialState:
+      type: object
+      required: [foodId, status, attempts, hasReaction]
+      properties:
+        foodId:      { type: string, format: uuid }
+        food:        { $ref: '#/components/schemas/FoodItem' }
+        status:      { $ref: '#/components/schemas/TrialStatus' }
+        attempts:    { type: integer, minimum: 0 }
+        lastFedAt:   { type: string, format: date-time, nullable: true }
+        hasReaction: { type: boolean }
+
+    # ── Achievement ──────────────────────────────────────────────────────
+    Achievement:
+      type: object
+      required: [id, code, name, description, icon, condition]
+      properties:
+        id:          { type: string, format: uuid }
+        code:        { type: string, example: UNLOCK_10_VEG }
+        name:        { type: string }
+        description: { type: string }
+        icon:        { type: string, description: 圖示識別碼或 emoji }
+        condition:
+          type: object
+          oneOf:
+            - $ref: '#/components/schemas/CondUnlockCountByCategory'
+            - $ref: '#/components/schemas/CondUnlockCountByRisk'
+            - $ref: '#/components/schemas/CondFirstFeedingByAge'
+            - $ref: '#/components/schemas/CondTotalUnlock'
+          discriminator:
+            propertyName: type
+    CondUnlockCountByCategory:
+      type: object
+      required: [type, category, count]
+      properties:
+        type:     { type: string, enum: [UNLOCK_COUNT_BY_CATEGORY] }
+        category: { $ref: '#/components/schemas/FoodCategory' }
+        count:    { type: integer, minimum: 1 }
+    CondUnlockCountByRisk:
+      type: object
+      required: [type, risk, count]
+      properties:
+        type:  { type: string, enum: [UNLOCK_COUNT_BY_RISK] }
+        risk:  { $ref: '#/components/schemas/AllergyRisk' }
+        count: { type: integer, minimum: 1 }
+    CondFirstFeedingByAge:
+      type: object
+      required: [type, ageMonth]
+      properties:
+        type:     { type: string, enum: [FIRST_FEEDING_BY_AGE] }
+        ageMonth: { type: integer, minimum: 0, maximum: 36 }
+    CondTotalUnlock:
+      type: object
+      required: [type, count]
+      properties:
+        type:  { type: string, enum: [TOTAL_UNLOCK] }
+        count: { type: integer, minimum: 1 }
+    BabyAchievement:
+      type: object
+      required: [achievement, unlocked]
+      properties:
+        achievement: { $ref: '#/components/schemas/Achievement' }
+        unlocked:    { type: boolean }
+        unlockedAt:  { type: string, format: date-time, nullable: true }
+        progress:
+          type: object
+          description: 進度提示 (依條件型別不同欄位)
+          properties:
+            current: { type: integer }
+            target:  { type: integer }
+
+    # ── Dashboard / Progress ─────────────────────────────────────────────
+    Dashboard:
+      type: object
+      required: [baby, statusCounts, progress, recentUnlocks, recommendations]
+      properties:
+        baby: { $ref: '#/components/schemas/Baby' }
+        statusCounts:
+          type: object
+          properties:
+            UNTRIED:  { type: integer }
+            TRYING:   { type: integer }
+            UNLOCKED: { type: integer }
+            ALLERGIC: { type: integer }
+        progress: { $ref: '#/components/schemas/Progress' }
+        recentUnlocks:
+          type: array
+          items: { $ref: '#/components/schemas/BabyAchievement' }
+        recommendations:
+          type: array
+          items: { $ref: '#/components/schemas/FoodItem' }
+    Progress:
+      type: object
+      required: [unlocked, total, percent, byCategory]
+      properties:
+        unlocked: { type: integer }
+        total:    { type: integer }
+        percent:  { type: number, format: float, minimum: 0, maximum: 100 }
+        byCategory:
+          type: array
+          items:
+            type: object
+            required: [category, unlocked, total]
+            properties:
+              category: { $ref: '#/components/schemas/FoodCategory' }
+              unlocked: { type: integer }
+              total:    { type: integer }
+
+    # ── Error (RFC 7807) ─────────────────────────────────────────────────
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type:     { type: string, format: uri }
+        title:    { type: string }
+        status:   { type: integer }
+        detail:   { type: string }
+        instance: { type: string, format: uri }
+    ValidationProblem:
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                type: object
+                required: [path, message]
+                properties:
+                  path:    { type: string }
+                  message: { type: string }

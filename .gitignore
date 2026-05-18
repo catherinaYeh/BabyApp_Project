@@ -1,0 +1,38 @@
+# Claude Code local settings
+.claude/settings.local.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# Node (預留給未來 apps/api & apps/web)
+node_modules/
+dist/
+build/
+.next/
+.turbo/
+coverage/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Prisma
+*.db
+*.db-journal
+
+# Test
+.playwright/
+playwright-report/
+test-results/
