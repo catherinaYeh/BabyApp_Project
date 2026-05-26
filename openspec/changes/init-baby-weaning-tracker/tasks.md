@@ -45,9 +45,9 @@
 
 ## 6. Trial Tracking 模組 (capability: trial-tracking)
 
-- [ ] 6.1 `GET /babies/:id/trials` 從 materialized view 讀
-- [ ] 6.2 `GET /babies/:id/recommendations` 邏輯：UNTRIED + risk ASC + 每類 ≤ 2 多元化
-- [ ] 6.3 測試（4 狀態各覆蓋一個、ALLERGIC 鎖定、推薦多元化、全部完成回 []）
+- [x] 6.1 `GET /babies/:id/trials` 從 materialized view 讀
+- [x] 6.2 `GET /babies/:id/recommendations` 邏輯：UNTRIED + risk ASC + 每類 ≤ 2 多元化
+- [x] 6.3 測試（4 狀態各覆蓋一個、ALLERGIC 鎖定、推薦多元化、全部完成回 []）
 
 ## 7. CSV Import 模組 (capability: csv-import)
 
@@ -61,17 +61,17 @@
 
 ## 8. Achievements 模組 (capability: achievements)
 
-- [ ] 8.1 Seed script：≥ 12 個徽章，4 種 condition type 各 ≥ 1 筆
-- [ ] 8.2 `AchievementEvaluator.evaluate(babyId)` 依 condition type 選資料源
-- [ ] 8.3 Routes：`GET /achievements`、`GET /babies/:id/achievements`
-- [ ] 8.4 進度計算 (current / target) 對未解鎖徽章
-- [ ] 8.5 測試（每種 condition type 一個 case、不重複解鎖、進度顯示）
+- [x] 8.1 Seed script：≥ 12 個徽章，4 種 condition type 各 ≥ 1 筆
+- [x] 8.2 `AchievementEvaluator.evaluate(babyId)` 依 condition type 選資料源
+- [x] 8.3 Routes：`GET /achievements`、`GET /babies/:id/achievements`
+- [x] 8.4 進度計算 (current / target) 對未解鎖徽章
+- [x] 8.5 測試（每種 condition type 一個 case、不重複解鎖、進度顯示）
 
 ## 9. Dashboard 模組 (capability: dashboard)
 
-- [ ] 9.1 `GET /babies/:id/dashboard`：聚合 baby + statusCounts + progress + recentUnlocks(5) + recommendations
-- [ ] 9.2 `GET /babies/:id/progress` 含 byCategory
-- [ ] 9.3 測試（四狀態總和、percent 計算、byCategory 對齊、recommendations 與獨立端點一致）
+- [x] 9.1 `GET /babies/:id/dashboard`：聚合 baby + statusCounts + progress + recentUnlocks(5) + recommendations
+- [x] 9.2 `GET /babies/:id/progress` 含 byCategory
+- [x] 9.3 測試（四狀態總和、percent 計算、byCategory 對齊、recommendations 與獨立端點一致）
 
 ## 10. Frontend Foundation (apps/web)
 

@@ -1,12 +1,13 @@
 import { PrismaClient } from '@prisma/client';
 import { seedFoods } from './seed/foods.js';
+import { seedAchievements } from './seed/achievements.js';
 
 const prisma = new PrismaClient();
 
 async function main(): Promise<void> {
-  // Seed system food items (idempotent upsert by name)
-  let created = 0;
-  let updated = 0;
+  // Foods (idempotent upsert by name)
+  let foodCreated = 0;
+  let foodUpdated = 0;
   for (const food of seedFoods) {
     const existing = await prisma.foodItem.findUnique({ where: { name: food.name } });
     if (existing) {
@@ -14,17 +15,40 @@ async function main(): Promise<void> {
         where: { name: food.name },
         data: { category: food.category, allergyRisk: food.allergyRisk, isSystem: true },
       });
-      updated += 1;
+      foodUpdated += 1;
     } else {
-      await prisma.foodItem.create({
-        data: { ...food, isSystem: true },
+      await prisma.foodItem.create({ data: { ...food, isSystem: true } });
+      foodCreated += 1;
+    }
+  }
+
+  // Achievements (idempotent upsert by code)
+  let achCreated = 0;
+  let achUpdated = 0;
+  for (const ach of seedAchievements) {
+    const existing = await prisma.achievement.findUnique({ where: { code: ach.code } });
+    if (existing) {
+      await prisma.achievement.update({
+        where: { code: ach.code },
+        data: {
+          name: ach.name,
+          description: ach.description,
+          icon: ach.icon,
+          condition: ach.condition,
+        },
       });
-      created += 1;
+      achUpdated += 1;
+    } else {
+      await prisma.achievement.create({ data: ach });
+      achCreated += 1;
     }
   }
 
   // eslint-disable-next-line no-console
-  console.log(`Seed complete: ${created} created, ${updated} updated, ${seedFoods.length} total`);
+  console.log(
+    `Seed complete: foods=${foodCreated}c/${foodUpdated}u (total ${seedFoods.length}), ` +
+      `achievements=${achCreated}c/${achUpdated}u (total ${seedAchievements.length})`,
+  );
 }
 
 main()

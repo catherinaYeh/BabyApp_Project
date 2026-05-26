@@ -2,6 +2,7 @@ import type { Baby as PrismaBaby } from '@prisma/client';
 import { prisma } from '../../lib/prisma.js';
 import { NotFoundError } from '../../lib/problems.js';
 import { ageInMonths } from '../../lib/ageInMonths.js';
+import { refreshTrialView } from '../../lib/refreshTrialView.js';
 import type { BabyCreateInput, BabyListQuery, BabyUpdateInput } from './baby.schema.js';
 
 export type BabyResponse = {
@@ -54,6 +55,8 @@ export async function createBaby(input: BabyCreateInput): Promise<BabyResponse> 
       ...(input.avatarColor ? { avatarColor: input.avatarColor } : {}),
     },
   });
+  // MV is CROSS JOIN baby × food_item; new baby needs an UNTRIED row per food.
+  await refreshTrialView();
   return toResponse(row);
 }
 
@@ -77,4 +80,5 @@ export async function deleteBaby(id: string): Promise<void> {
   const exists = await prisma.baby.findUnique({ where: { id }, select: { id: true } });
   if (!exists) throw new NotFoundError('Baby', id);
   await prisma.baby.delete({ where: { id } });
+  await refreshTrialView();
 }

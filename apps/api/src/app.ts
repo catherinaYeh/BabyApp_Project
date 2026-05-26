@@ -13,6 +13,12 @@ import { healthRouter } from './routes/health.js';
 import { babyRouter } from './modules/babies/baby.routes.js';
 import { foodRouter } from './modules/foods/food.routes.js';
 import { feedingRouter } from './modules/feedings/feeding.routes.js';
+import { trialRouter } from './modules/trials/trial.routes.js';
+import {
+  achievementRouter,
+  babyAchievementRouter,
+} from './modules/achievements/achievement.routes.js';
+import { dashboardRouter } from './modules/dashboard/dashboard.routes.js';
 
 export function createApp(): Express {
   const app = express();
@@ -44,7 +50,10 @@ export function createApp(): Express {
   app.use('/api/v1/babies', babyRouter);
   app.use('/api/v1/foods', foodRouter);
   app.use('/api/v1/babies/:babyId/feedings', feedingRouter);
-  // additional v1 resources (trials, achievements, dashboard) added in later phases
+  app.use('/api/v1/babies/:babyId', trialRouter); // /trials, /recommendations
+  app.use('/api/v1/babies/:babyId', dashboardRouter); // /dashboard, /progress
+  app.use('/api/v1/babies/:babyId/achievements', babyAchievementRouter);
+  app.use('/api/v1/achievements', achievementRouter);
 
   app.use(errorHandler);
   return app;
