@@ -1,0 +1,107 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = []
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AllergyRisk {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum FoodCategory {
+  VEGETABLE
+  MUSHROOM
+  FRUIT
+  SEAFOOD
+  MEAT
+  EGG
+  DAIRY
+  GRAIN
+  NUT
+  OTHER
+}
+
+enum Reaction {
+  NONE
+  MILD
+  SEVERE
+}
+
+model Baby {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        String   @db.VarChar(30)
+  birthDate   DateTime @map("birth_date") @db.Date
+  avatarColor String   @default("#FFB7B7") @map("avatar_color") @db.VarChar(7)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  feedings FeedingRecord[]
+  unlocks  AchievementUnlock[]
+
+  @@map("baby")
+}
+
+model FoodItem {
+  id          String       @id @default(uuid()) @db.Uuid
+  name        String       @unique @db.VarChar(30)
+  category    FoodCategory
+  allergyRisk AllergyRisk  @map("allergy_risk")
+  isSystem    Boolean      @default(false) @map("is_system")
+  createdAt   DateTime     @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime     @updatedAt @map("updated_at") @db.Timestamptz
+
+  feedings FeedingRecord[]
+
+  @@map("food_item")
+}
+
+model FeedingRecord {
+  id           String   @id @default(uuid()) @db.Uuid
+  babyId       String   @map("baby_id") @db.Uuid
+  foodId       String   @map("food_id") @db.Uuid
+  fedAt        DateTime @map("fed_at") @db.Timestamptz
+  amountMl     Int      @map("amount_ml")
+  attemptCount Int      @map("attempt_count")
+  reaction     Reaction @default(NONE)
+  note         String?  @db.VarChar(500)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  baby Baby     @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  food FoodItem @relation(fields: [foodId], references: [id], onDelete: Restrict)
+
+  @@unique([babyId, foodId, fedAt], name: "feeding_baby_food_fedAt_unique")
+  @@index([babyId, fedAt(sort: Desc)])
+  @@map("feeding_record")
+}
+
+model Achievement {
+  id          String @id @default(uuid()) @db.Uuid
+  code        String @unique @db.VarChar(60)
+  name        String @db.VarChar(60)
+  description String @db.VarChar(200)
+  icon        String @db.VarChar(60)
+  condition   Json
+
+  unlocks AchievementUnlock[]
+
+  @@map("achievement")
+}
+
+model AchievementUnlock {
+  id            String   @id @default(uuid()) @db.Uuid
+  babyId        String   @map("baby_id") @db.Uuid
+  achievementId String   @map("achievement_id") @db.Uuid
+  unlockedAt    DateTime @default(now()) @map("unlocked_at") @db.Timestamptz
+
+  baby        Baby        @relation(fields: [babyId], references: [id], onDelete: Cascade)
+  achievement Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([babyId, achievementId])
+  @@map("achievement_unlock")
+}

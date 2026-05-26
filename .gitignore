@@ -28,6 +28,9 @@ yarn-debug.log*
 .env.*
 !.env.example
 
+# Prisma generated client (under workspace node_modules already covered, but keep explicit)
+# (no extra entries needed)
+
 # Prisma
 *.db
 *.db-journal

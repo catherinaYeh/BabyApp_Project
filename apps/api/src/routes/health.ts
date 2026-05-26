@@ -1,0 +1,18 @@
+import { Router } from 'express';
+import { prisma } from '../lib/prisma.js';
+
+export const healthRouter: Router = Router();
+
+healthRouter.get('/healthz', async (_req, res) => {
+  let db: 'ok' | 'down' = 'ok';
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+  } catch {
+    db = 'down';
+  }
+  res.status(db === 'ok' ? 200 : 503).json({
+    status: db === 'ok' ? 'ok' : 'degraded',
+    db,
+    version: process.env.npm_package_version ?? '0.0.0',
+  });
+});

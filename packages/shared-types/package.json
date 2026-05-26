@@ -1,0 +1,12 @@
+{
+  "name": "@baby/shared-types",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "echo 'no build (placeholder)'",
+    "test": "echo 'no tests'",
+    "lint": "echo 'no source'",
+    "typecheck": "echo 'no source'"
+  }
+}

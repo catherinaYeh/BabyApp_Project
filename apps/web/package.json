@@ -1,0 +1,12 @@
+{
+  "name": "@baby/web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'web app not yet bootstrapped (will be added in Phase 10)'",
+    "build": "echo 'web app not yet bootstrapped'",
+    "test": "echo 'no tests yet'",
+    "lint": "echo 'no source yet'",
+    "typecheck": "echo 'no source yet'"
+  }
+}

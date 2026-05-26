@@ -1,28 +1,28 @@
 ## 1. Monorepo Bootstrap
 
-- [ ] 1.1 建立 monorepo 結構：`apps/api`、`apps/web`、`packages/shared-types`，pnpm workspaces
-- [ ] 1.2 `pnpm-workspace.yaml`、`turbo.json`、根 `.editorconfig`、`.nvmrc` (`v20.18.1`)
-- [ ] 1.3 Root `package.json` scripts：`dev`、`build`、`test`、`lint`、`types:gen`
-- [ ] 1.4 ESLint + Prettier 共用 preset 套用 root
-- [ ] 1.5 commitlint + husky pre-commit (lint + types:gen)
+- [x] 1.1 建立 monorepo 結構：`apps/api`、`apps/web`、`packages/shared-types`，pnpm workspaces
+- [x] 1.2 `pnpm-workspace.yaml`、`turbo.json`、根 `.editorconfig`、`.nvmrc` (`v20.18.1`)
+- [x] 1.3 Root `package.json` scripts：`dev`、`build`、`test`、`lint`、`types:gen`
+- [x] 1.4 ESLint + Prettier 共用 preset 套用 root
+- [x] 1.5 commitlint + husky pre-commit (lint + types:gen)
 
 ## 2. Backend Foundation (apps/api)
 
-- [ ] 2.1 初始化 TypeScript + tsx + express 4 + cors + pino + pino-http + zod + prisma + @prisma/client + dotenv
-- [ ] 2.2 Docker Compose：postgres:15 + adminer，volume 持久化
-- [ ] 2.3 Prisma schema：enum (AllergyRisk / FoodCategory / Reaction) + model (Baby / FoodItem / FeedingRecord / Achievement / AchievementUnlock)，產 migration 1 (init)
-- [ ] 2.4 Migration 2：建立 `baby_food_trial` materialized view + unique index (baby_id, food_id)
-- [ ] 2.5 共用 middleware：`requestId`、`errorHandler` (RFC 7807)、`zodValidate`、`rateLimit`
-- [ ] 2.6 `GET /healthz` 含 DB ping，回傳 `{ status, db, version }`
-- [ ] 2.7 swagger-ui-express 掛 `/api/v1/docs` 載入 openapi.yaml
-- [ ] 2.8 Pino logger pretty (dev) / json (prod) 兩種設定
+- [x] 2.1 初始化 TypeScript + tsx + express 4 + cors + pino + pino-http + zod + prisma + @prisma/client + dotenv
+- [x] 2.2 Docker Compose：postgres:15 + adminer，volume 持久化
+- [x] 2.3 Prisma schema：enum (AllergyRisk / FoodCategory / Reaction) + model (Baby / FoodItem / FeedingRecord / Achievement / AchievementUnlock)，產 migration 1 (init)
+- [x] 2.4 Migration 2：建立 `baby_food_trial` materialized view + unique index (baby_id, food_id)
+- [x] 2.5 共用 middleware：`requestId`、`errorHandler` (RFC 7807)、`zodValidate`、`rateLimit`
+- [x] 2.6 `GET /healthz` 含 DB ping，回傳 `{ status, db, version }`
+- [x] 2.7 swagger-ui-express 掛 `/api/v1/docs` 載入 openapi.yaml
+- [x] 2.8 Pino logger pretty (dev) / json (prod) 兩種設定
 
 ## 3. Babies 模組 (capability: babies)
 
-- [ ] 3.1 Repository (Prisma) + Service (含 `ageInMonths` 計算)
-- [ ] 3.2 Routes：`GET/POST /babies`、`GET/PATCH/DELETE /babies/:id`
-- [ ] 3.3 Zod schemas BabyCreate / BabyUpdate (含 birthDate 不可為未來)
-- [ ] 3.4 單元 + integration test (含未來日、姓名長度、avatarColor 格式)
+- [x] 3.1 Repository (Prisma) + Service (含 `ageInMonths` 計算)
+- [x] 3.2 Routes：`GET/POST /babies`、`GET/PATCH/DELETE /babies/:id`
+- [x] 3.3 Zod schemas BabyCreate / BabyUpdate (含 birthDate 不可為未來)
+- [x] 3.4 單元 + integration test (含未來日、姓名長度、avatarColor 格式)
 
 ## 4. Food Catalog 模組 (capability: food-catalog)
 
