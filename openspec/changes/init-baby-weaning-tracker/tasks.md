@@ -26,22 +26,22 @@
 
 ## 4. Food Catalog 模組 (capability: food-catalog)
 
-- [ ] 4.1 Seed script：~80 項台灣常見副食品，`is_system = true`，10 個 category 全覆蓋
-- [ ] 4.2 Routes：`GET/POST /foods`、`GET/PATCH/DELETE /foods/:id`
-- [ ] 4.3 系統食材 PATCH/DELETE 回 403；被引用食材 DELETE 回 409
-- [ ] 4.4 篩選/排序/搜尋 (category、allergyRisk、search icontains、sort=risk_asc/...)
-- [ ] 4.5 名稱唯一衝突 409
-- [ ] 4.6 測試（含 seed idempotency、系統項唯讀、被引用無法刪）
+- [x] 4.1 Seed script：~80 項台灣常見副食品，`is_system = true`，10 個 category 全覆蓋
+- [x] 4.2 Routes：`GET/POST /foods`、`GET/PATCH/DELETE /foods/:id`
+- [x] 4.3 系統食材 PATCH/DELETE 回 403；被引用食材 DELETE 回 409
+- [x] 4.4 篩選/排序/搜尋 (category、allergyRisk、search icontains、sort=risk_asc/...)
+- [x] 4.5 名稱唯一衝突 409
+- [x] 4.6 測試（含 seed idempotency、系統項唯讀、被引用無法刪）
 
 ## 5. Feeding Records 模組 (capability: feeding-records)
 
-- [ ] 5.1 Service：建立時自動算 `attemptCount = COUNT(*) + 1 of (babyId, foodId)`
-- [ ] 5.2 Routes：`GET/POST /babies/:id/feedings`、`GET/PATCH/DELETE /babies/:id/feedings/:fid`
-- [ ] 5.3 `view=week|month` 自動套用 from/to
-- [ ] 5.4 寫入/修改/刪除後同步 `REFRESH MATERIALIZED VIEW CONCURRENTLY baby_food_trial`
-- [ ] 5.5 寫入後同步呼叫 `AchievementEvaluator`，新解鎖一併回 `FeedingCreateResponse`
-- [ ] 5.6 唯一鍵 (babyId, foodId, fedAt) 衝突 409
-- [ ] 5.7 測試（attemptCount 自動編號、衝突、刪除後狀態回滾、reaction 各值）
+- [x] 5.1 Service：建立時自動算 `attemptCount = COUNT(*) + 1 of (babyId, foodId)`
+- [x] 5.2 Routes：`GET/POST /babies/:id/feedings`、`GET/PATCH/DELETE /babies/:id/feedings/:fid`
+- [x] 5.3 `view=week|month` 自動套用 from/to
+- [x] 5.4 寫入/修改/刪除後同步 `REFRESH MATERIALIZED VIEW CONCURRENTLY baby_food_trial`
+- [x] 5.5 寫入後同步呼叫 `AchievementEvaluator`，新解鎖一併回 `FeedingCreateResponse` (Phase 8 前為 stub)
+- [x] 5.6 唯一鍵 (babyId, foodId, fedAt) 衝突 409
+- [x] 5.7 測試（attemptCount 自動編號、衝突、刪除後狀態回滾、reaction 各值）
 
 ## 6. Trial Tracking 模組 (capability: trial-tracking)
 

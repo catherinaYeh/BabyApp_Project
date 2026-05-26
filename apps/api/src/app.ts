@@ -11,6 +11,8 @@ import { errorHandler } from './middleware/errorHandler.js';
 import { apiRateLimit } from './middleware/rateLimit.js';
 import { healthRouter } from './routes/health.js';
 import { babyRouter } from './modules/babies/baby.routes.js';
+import { foodRouter } from './modules/foods/food.routes.js';
+import { feedingRouter } from './modules/feedings/feeding.routes.js';
 
 export function createApp(): Express {
   const app = express();
@@ -40,7 +42,9 @@ export function createApp(): Express {
 
   app.use('/api/v1', apiRateLimit);
   app.use('/api/v1/babies', babyRouter);
-  // additional v1 resources (foods, feedings, …) added in later phases
+  app.use('/api/v1/foods', foodRouter);
+  app.use('/api/v1/babies/:babyId/feedings', feedingRouter);
+  // additional v1 resources (trials, achievements, dashboard) added in later phases
 
   app.use(errorHandler);
   return app;
