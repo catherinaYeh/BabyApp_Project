@@ -1,27 +1,2 @@
-name: init-baby-weaning-tracker
-status: proposed
-created: 2026-05-18
-owner: samuel325365@gmail.com
-artifacts:
-  - id: proposal
-    path: proposal.md
-    status: done
-  - id: design
-    path: design.md
-    status: done
-  - id: openapi
-    path: openapi.yaml
-    status: done
-  - id: component-architecture
-    path: component-architecture.md
-    status: done
-  - id: tasks
-    path: tasks.md
-    status: done
-apply:
-  requires:
-    - proposal
-    - design
-    - openapi
-    - component-architecture
-    - tasks
+schema: spec-driven
+created: 2026-05-26
