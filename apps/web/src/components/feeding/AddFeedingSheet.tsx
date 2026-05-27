@@ -93,14 +93,17 @@ export function AddFeedingSheet() {
 
   return (
     <div className="fixed inset-0 z-50">
-      <div className="absolute inset-0 bg-black/40" onClick={close} />
+      <div className="absolute inset-0 bg-bark/40" onClick={close} />
       <form
         onSubmit={submit}
-        className="absolute bottom-0 left-1/2 max-h-[85vh] w-full max-w-mobile -translate-x-1/2 overflow-y-auto rounded-t-3xl bg-white pb-8"
+        className="absolute bottom-0 left-1/2 max-h-[85vh] w-full max-w-mobile -translate-x-1/2 overflow-y-auto rounded-t-4xl border-t border-bark-faded/20 bg-cream-card pb-8 shadow-paper"
       >
-        <div className="sticky top-0 flex items-center justify-between border-b border-slate-100 bg-white px-5 py-3">
-          <h2 className="text-base font-semibold">紀錄餵食</h2>
-          <button type="button" onClick={close} aria-label="關閉" className="text-slate-400">
+        <div className="sticky top-0 flex items-center justify-between border-b border-bark-faded/20 bg-cream-card px-5 py-3">
+          <div>
+            <h2 className="serif text-lg font-semibold text-bark">記錄一筆嚐鮮</h2>
+            <p className="text-[10px] tracking-[0.2em] text-bark-soft">A NEW PAGE</p>
+          </div>
+          <button type="button" onClick={close} aria-label="關閉" className="text-bark-faded">
             <X size={20} />
           </button>
         </div>
@@ -112,37 +115,37 @@ export function AddFeedingSheet() {
                 placeholder="搜尋食材"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-brand focus:outline-none"
+                className="w-full rounded-xl border border-bark-faded/30 bg-cream/50 px-3 py-2 text-bark focus:border-terracotta focus:outline-none"
               />
-              <ul className="mt-2 max-h-44 divide-y divide-slate-100 overflow-y-auto rounded-xl border border-slate-100">
+              <ul className="mt-2 max-h-44 divide-y divide-bark-faded/20 overflow-y-auto rounded-xl border border-bark-faded/20 bg-cream/50">
                 {foods?.data?.map((f) => (
                   <li key={f.id}>
                     <button
                       type="button"
                       onClick={() => setFoodId(f.id)}
-                      className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left hover:bg-slate-50"
+                      className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left hover:bg-cream-deep/50"
                     >
-                      <span className="text-sm">{f.name}</span>
+                      <span className="serif text-sm text-bark">{f.name}</span>
                       <AllergyBadge risk={f.allergyRisk} />
                     </button>
                   </li>
                 ))}
                 {foods?.data?.length === 0 && (
-                  <li className="py-3 text-center text-xs text-slate-400">沒有符合的食材</li>
+                  <li className="py-3 text-center text-xs text-bark-soft">沒有符合的食材</li>
                 )}
               </ul>
             </div>
           )}
           {selected && (
-            <div className="flex items-center justify-between rounded-xl bg-slate-50 px-3 py-2">
+            <div className="flex items-center justify-between rounded-xl border border-bark-faded/20 bg-cream/50 px-3 py-2">
               <div className="flex items-center gap-2">
-                <span className="font-medium">{selected.name}</span>
+                <span className="serif text-base font-semibold text-bark">{selected.name}</span>
                 <AllergyBadge risk={selected.allergyRisk} />
               </div>
               <button
                 type="button"
                 onClick={() => setFoodId(undefined)}
-                className="text-xs text-brand"
+                className="text-xs font-semibold text-terracotta"
               >
                 換食材
               </button>
@@ -150,48 +153,49 @@ export function AddFeedingSheet() {
           )}
 
           <label className="block">
-            <span className="text-sm text-slate-600">時間</span>
+            <span className="text-sm text-bark-soft">時間</span>
             <input
               type="datetime-local"
               value={fedAt}
               onChange={(e) => setFedAt(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-brand focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-bark-faded/30 bg-cream/50 px-3 py-2 text-bark focus:border-terracotta focus:outline-none"
             />
           </label>
 
           <label className="block">
-            <span className="text-sm text-slate-600">份量 (ml)</span>
+            <span className="text-sm text-bark-soft">份量 (ml)</span>
             <input
               type="number"
               min={1}
               max={1000}
               value={amountMl}
               onChange={(e) => setAmountMl(Number(e.target.value))}
-              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-brand focus:outline-none"
+              className="mt-1 w-full rounded-xl border border-bark-faded/30 bg-cream/50 px-3 py-2 text-bark focus:border-terracotta focus:outline-none"
             />
           </label>
 
           <fieldset>
-            <legend className="text-sm text-slate-600">反應</legend>
+            <legend className="text-sm text-bark-soft">反應</legend>
             <div className="mt-2 grid grid-cols-3 gap-2">
               {(
                 [
-                  { v: 'NONE', label: '無反應' },
-                  { v: 'MILD', label: '輕微' },
-                  { v: 'SEVERE', label: '嚴重' },
+                  { v: 'NONE', label: '無反應', emoji: '🌿' },
+                  { v: 'MILD', label: '輕微', emoji: '🌼' },
+                  { v: 'SEVERE', label: '嚴重', emoji: '⚠️' },
                 ] as const
               ).map((opt) => (
                 <button
                   key={opt.v}
                   type="button"
                   onClick={() => setReaction(opt.v)}
-                  className={`rounded-xl border px-2 py-2 text-sm ${
+                  className={`flex flex-col items-center gap-0.5 rounded-xl border px-2 py-2 text-sm transition-colors ${
                     reaction === opt.v
-                      ? 'border-brand bg-brand/10 text-brand'
-                      : 'border-slate-200 text-slate-600'
+                      ? 'border-terracotta bg-terracotta-soft/40 text-bark'
+                      : 'border-bark-faded/30 text-bark-soft'
                   }`}
                 >
-                  {opt.label}
+                  <span className="text-lg">{opt.emoji}</span>
+                  <span>{opt.label}</span>
                 </button>
               ))}
             </div>
@@ -199,26 +203,26 @@ export function AddFeedingSheet() {
 
           {reaction !== 'NONE' && (
             <label className="block">
-              <span className="text-sm text-slate-600">備註</span>
+              <span className="text-sm text-bark-soft">備註</span>
               <textarea
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 maxLength={500}
                 rows={2}
-                placeholder="例如：臉部紅疹"
-                className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-brand focus:outline-none"
+                placeholder="例如:臉部紅疹"
+                className="mt-1 w-full rounded-xl border border-bark-faded/30 bg-cream/50 px-3 py-2 text-bark focus:border-terracotta focus:outline-none"
               />
             </label>
           )}
 
-          {error && <p className="text-sm text-red-500">{error}</p>}
+          {error && <p className="text-sm text-blush-dark">{error}</p>}
 
           <button
             type="submit"
             disabled={create.isPending}
-            className="w-full rounded-xl bg-brand py-3 font-semibold text-white shadow-fab disabled:opacity-50"
+            className="w-full rounded-2xl bg-terracotta py-3 font-semibold text-cream shadow-fab disabled:opacity-50"
           >
-            {create.isPending ? '紀錄中…' : '完成紀錄'}
+            {create.isPending ? '紀錄中…' : '把這一頁收下'}
           </button>
         </div>
       </form>

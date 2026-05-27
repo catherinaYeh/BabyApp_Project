@@ -5,19 +5,41 @@
 @layer base {
   html,
   body {
-    @apply h-full bg-slate-50;
-    font-family: 'Noto Sans TC', system-ui, sans-serif;
+    @apply h-full bg-cream text-bark;
+    font-family: 'Quicksand', 'Noto Sans TC', system-ui, sans-serif;
   }
   body {
-    @apply min-h-screen;
+    @apply min-h-screen bg-paper bg-paper;
+    background-attachment: fixed;
   }
-  /* Numeric/percent emphasis */
+  h1,
+  h2,
+  h3 {
+    font-family: 'Fraunces', 'Noto Serif TC', Georgia, serif;
+    font-feature-settings: 'ss01', 'liga';
+  }
+  .serif {
+    font-family: 'Fraunces', 'Noto Serif TC', Georgia, serif;
+  }
   .num {
-    font-family: 'Manrope', 'Noto Sans TC', sans-serif;
+    font-family: 'Fraunces', 'Manrope', 'Noto Sans TC', sans-serif;
+    font-feature-settings: 'tnum';
     @apply font-semibold tracking-tight;
   }
   /* Mobile-first container — keeps content centered & narrow on desktop */
   .mobile-container {
     @apply mx-auto w-full max-w-mobile;
+  }
+}
+
+@layer components {
+  /* "Paper card" — slightly raised cream tile with a subtle hand-drawn vibe. */
+  .paper-card {
+    @apply rounded-3xl bg-cream-card shadow-paper;
+    border: 1px solid rgba(74, 53, 40, 0.06);
+  }
+  /* Ribbon-style heading used in section labels. */
+  .ribbon-label {
+    @apply inline-block rounded-md bg-mustard-soft px-2 py-0.5 text-xs font-medium text-bark shadow-ribbon;
   }
 }

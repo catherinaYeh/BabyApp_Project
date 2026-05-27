@@ -13,16 +13,16 @@ export function BabiesPage() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold">寶寶</h2>
+        <h2 className="serif text-xl font-semibold text-bark">寶寶</h2>
         <Link
           to="/babies/new"
-          className="inline-flex items-center gap-1 rounded-full bg-brand px-3 py-1.5 text-sm font-medium text-white shadow-sm"
+          className="inline-flex items-center gap-1 rounded-full bg-terracotta px-3 py-1.5 text-sm font-semibold text-cream shadow-sm"
         >
           <Plus size={16} /> 新增
         </Link>
       </div>
 
-      {isLoading && <p className="text-sm text-slate-500">載入中…</p>}
+      {isLoading && <p className="text-sm text-bark-soft">載入中…</p>}
 
       {!isLoading && (!data?.data || data.data.length === 0) && (
         <EmptyState
@@ -32,7 +32,7 @@ export function BabiesPage() {
           action={
             <Link
               to="/babies/new"
-              className="inline-flex items-center gap-1 rounded-full bg-brand px-4 py-2 text-sm font-medium text-white"
+              className="inline-flex items-center gap-1 rounded-full bg-terracotta px-4 py-2 text-sm font-semibold text-cream"
             >
               <Plus size={16} /> 新增寶寶
             </Link>
@@ -42,29 +42,26 @@ export function BabiesPage() {
 
       <ul className="space-y-2">
         {data?.data?.map((b) => (
-          <li
-            key={b.id}
-            className="flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm"
-          >
+          <li key={b.id} className="paper-card flex items-center justify-between p-3">
             <button
               type="button"
               onClick={() => setActive(b.id)}
               className="flex flex-1 items-center gap-3 text-left"
             >
               <span
-                className="inline-block h-12 w-12 shrink-0 rounded-full border border-slate-100"
+                className="inline-block h-12 w-12 shrink-0 rounded-full border border-bark-faded/20"
                 style={{ backgroundColor: b.avatarColor }}
               />
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">{b.name}</span>
+                  <span className="serif text-base font-semibold text-bark">{b.name}</span>
                   {b.id === activeId && (
-                    <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] text-brand">
+                    <span className="rounded-full bg-terracotta-soft px-2 py-0.5 text-[10px] font-semibold text-terracotta-dark">
                       使用中
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-slate-500">
+                <div className="text-xs text-bark-soft">
                   {b.birthDate} · {b.ageMonth} 月齡
                 </div>
               </div>
@@ -76,7 +73,7 @@ export function BabiesPage() {
                   del.mutate(b.id);
                 }
               }}
-              className="rounded-full p-2 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-500"
+              className="rounded-full p-2 text-bark-faded transition-colors hover:bg-blush-soft hover:text-blush-dark"
               aria-label="刪除"
             >
               <Trash2 size={18} />

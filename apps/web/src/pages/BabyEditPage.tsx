@@ -5,14 +5,14 @@ import { useAppStore } from '@/lib/store';
 import { ApiError } from '@/lib/api/client';
 
 const AVATAR_COLORS = [
-  '#FFB7B7',
-  '#FFD580',
-  '#FFE49A',
-  '#A8E6CF',
-  '#A0E7E5',
-  '#B5D0FF',
-  '#D7B3FF',
-  '#FFC8DD',
+  '#D67D5C', // terracotta
+  '#E0AC4C', // mustard
+  '#9CAF88', // sage
+  '#E8A89A', // blush
+  '#B5A493', // bark faded
+  '#A8C5D8', // dusty blue
+  '#C7B0E1', // soft lavender
+  '#F2D38C', // butter
 ];
 
 export function BabyEditPage() {
@@ -63,32 +63,32 @@ export function BabyEditPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">{isEdit ? '編輯寶寶' : '新增寶寶'}</h2>
-      <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl bg-white p-4 shadow-sm">
+      <h2 className="serif text-xl font-semibold text-bark">{isEdit ? '編輯寶寶' : '新增寶寶'}</h2>
+      <form onSubmit={handleSubmit} className="paper-card space-y-4 p-5">
         <label className="block">
-          <span className="text-sm text-slate-600">姓名</span>
+          <span className="text-sm text-bark-soft">姓名</span>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={30}
             required
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-brand focus:outline-none"
+            className="mt-1 w-full rounded-xl border border-bark-faded/30 bg-cream/50 px-3 py-2 text-bark focus:border-terracotta focus:outline-none"
           />
         </label>
         <label className="block">
-          <span className="text-sm text-slate-600">出生日期</span>
+          <span className="text-sm text-bark-soft">出生日期</span>
           <input
             type="date"
             value={birthDate}
             onChange={(e) => setBirthDate(e.target.value)}
             max={new Date().toISOString().slice(0, 10)}
             required
-            className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 focus:border-brand focus:outline-none"
+            className="mt-1 w-full rounded-xl border border-bark-faded/30 bg-cream/50 px-3 py-2 text-bark focus:border-terracotta focus:outline-none"
           />
         </label>
         <fieldset>
-          <legend className="text-sm text-slate-600">頭像顏色</legend>
+          <legend className="text-sm text-bark-soft">頭像顏色</legend>
           <div className="mt-2 grid grid-cols-8 gap-2">
             {AVATAR_COLORS.map((c) => (
               <button
@@ -97,26 +97,26 @@ export function BabyEditPage() {
                 onClick={() => setAvatarColor(c)}
                 aria-label={`color ${c}`}
                 className={`h-8 w-8 rounded-full border-2 transition-transform ${
-                  avatarColor === c ? 'border-brand scale-110' : 'border-white'
+                  avatarColor === c ? 'scale-110 border-terracotta' : 'border-cream-card'
                 }`}
                 style={{ backgroundColor: c }}
               />
             ))}
           </div>
         </fieldset>
-        {error && <p className="text-sm text-red-500">{error}</p>}
+        {error && <p className="text-sm text-blush-dark">{error}</p>}
         <div className="flex gap-2 pt-2">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex-1 rounded-xl border border-slate-200 py-2 text-sm font-medium text-slate-700"
+            className="flex-1 rounded-xl border border-bark-faded/30 py-2 text-sm font-semibold text-bark-soft"
           >
             取消
           </button>
           <button
             type="submit"
             disabled={pending}
-            className="flex-1 rounded-xl bg-brand py-2 text-sm font-semibold text-white shadow disabled:opacity-50"
+            className="flex-1 rounded-xl bg-terracotta py-2 text-sm font-semibold text-cream shadow disabled:opacity-50"
           >
             {pending ? '處理中…' : '儲存'}
           </button>

@@ -13,24 +13,24 @@ export function BabySwitcher() {
     <button
       type="button"
       onClick={() => toggle(true)}
-      className="flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-sm transition-colors hover:bg-slate-50"
+      className="flex items-center gap-2 rounded-full border border-bark-faded/30 bg-cream-card px-3 py-1.5 shadow-sm transition-colors hover:bg-cream-deep"
     >
       {active ? (
         <>
           <span
-            className="inline-block h-7 w-7 shrink-0 rounded-full border-2 border-white shadow"
+            className="inline-block h-7 w-7 shrink-0 rounded-full border-2 border-cream-card shadow"
             style={{ backgroundColor: active.avatarColor }}
             aria-hidden
           />
           <span className="flex flex-col items-start leading-tight">
-            <span className="text-sm font-semibold">{active.name}</span>
-            <span className="text-[10px] text-slate-500">{active.ageMonth}M</span>
+            <span className="serif text-sm font-semibold text-bark">{active.name}</span>
+            <span className="text-[10px] tracking-widest text-bark-soft">{active.ageMonth} M</span>
           </span>
         </>
       ) : (
-        <span className="text-sm text-slate-500">尚未建立寶寶</span>
+        <span className="text-sm text-bark-soft">尚未建立寶寶</span>
       )}
-      <ChevronDown size={16} className="text-slate-400" />
+      <ChevronDown size={16} className="text-bark-faded" />
     </button>
   );
 }
