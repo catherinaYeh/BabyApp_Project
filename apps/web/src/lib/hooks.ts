@@ -3,6 +3,8 @@ import { babiesApi, type BabyCreate, type BabyUpdate } from './api/babies';
 import { foodsApi, type FoodFilters } from './api/foods';
 import { feedingsApi, type FeedingListParams } from './api/feedings';
 import { dashboardApi } from './api/dashboard';
+import { trialsApi } from './api/trials';
+import { achievementsApi } from './api/achievements';
 import { useAppStore } from './store';
 
 export const useBabies = () =>
@@ -29,6 +31,20 @@ export const useFeedings = (babyId: string | null, params: FeedingListParams = {
     queryKey: ['feedings', babyId, params],
     enabled: !!babyId,
     queryFn: () => feedingsApi.list(babyId!, params),
+  });
+
+export const useTrials = (babyId: string | null) =>
+  useQuery({
+    queryKey: ['trials', babyId],
+    enabled: !!babyId,
+    queryFn: () => trialsApi.list(babyId!),
+  });
+
+export const useBabyAchievements = (babyId: string | null) =>
+  useQuery({
+    queryKey: ['baby-achievements', babyId],
+    enabled: !!babyId,
+    queryFn: () => achievementsApi.listForBaby(babyId!),
   });
 
 export function useCreateBaby() {
@@ -71,6 +87,8 @@ export function useCreateFeeding() {
     onSuccess: (data, vars) => {
       qc.invalidateQueries({ queryKey: ['feedings', vars.babyId] });
       qc.invalidateQueries({ queryKey: ['dashboard', vars.babyId] });
+      qc.invalidateQueries({ queryKey: ['trials', vars.babyId] });
+      qc.invalidateQueries({ queryKey: ['baby-achievements', vars.babyId] });
       if (data.newlyUnlockedAchievements?.length) {
         pushUnlocks(data.newlyUnlockedAchievements);
       }
@@ -85,6 +103,8 @@ export function useDeleteFeeding(babyId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['feedings', babyId] });
       qc.invalidateQueries({ queryKey: ['dashboard', babyId] });
+      qc.invalidateQueries({ queryKey: ['trials', babyId] });
+      qc.invalidateQueries({ queryKey: ['baby-achievements', babyId] });
     },
   });
 }

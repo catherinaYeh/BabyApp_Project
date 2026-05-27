@@ -87,11 +87,11 @@
 
 - [x] 11.1 共用元件：AllergyBadge、TrialStatusChip、ProgressRing、EmptyState、Spinner (ErrorState/ConfirmDialog 後續補)
 - [x] 11.2 Baby 管理：BabiesPage、BabyEditPage、BabySwitcher + BabyPickerDrawer
-- [ ] 11.3 食材圖鑑：FoodCatalogPage (CategoryTabs + FoodList + FoodCard)、FoodDetailPage、自訂食材表單
+- [x] 11.3 食材圖鑑：FoodCatalogPage (CategoryTabs + FoodList + FoodCard) — FoodDetailPage / 自訂食材表單後續補
 - [x] 11.4 餵食紀錄：AddFeedingSheet（搜尋食材 + 預填 + 衝突提示）、FeedingTimeline、編輯/刪除 confirm dialog (Timeline 待 Phase 11.5)
-- [ ] 11.5 歷史視圖：HistoryPage + ViewToggle + WeekCalendar + MonthCalendar
+- [x] 11.5 歷史視圖：HistoryPage + ViewToggle (本週/本月/全部) + 日誌式群組分組 (WeekCalendar / MonthCalendar 後續可補)
 - [x] 11.6 首頁：HomePage 用 useDashboard，StatusCountCard × 4、ProgressRing、RecommendationStrip、RecentUnlockBanner
-- [ ] 11.7 徽章：AchievementsPage BadgeWall、BadgeUnlockToast (Framer Motion + confetti)
+- [x] 11.7 徽章：AchievementsPage BadgeWall (已解鎖/待解鎖 + 進度條)、BadgeUnlockToast (CSS transition, confetti 後續可加)
 - [ ] 11.8 CSV 匯入：ImportPage、CsvDropzone、papaparse preview、dryRun 顯示預估、實際匯入摘要
 - [ ] 11.9 設定：SettingsPage (清空資料、匯出 CSV、版本資訊)
 
