@@ -2,11 +2,35 @@
   "name": "@baby/web",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "echo 'web app not yet bootstrapped (will be added in Phase 10)'",
-    "build": "echo 'web app not yet bootstrapped'",
-    "test": "echo 'no tests yet'",
-    "lint": "echo 'no source yet'",
-    "typecheck": "echo 'no source yet'"
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'no tests yet (placeholder)'",
+    "types:gen": "openapi-typescript ../../openspec/changes/init-baby-weaning-tracker/openapi.yaml -o src/types/api.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^5.59.0",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.451.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2",
+    "zustand": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.16.10",
+    "@types/react": "^18.3.11",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.2",
+    "autoprefixer": "^10.4.20",
+    "openapi-typescript": "^7.4.1",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2",
+    "vite": "^5.4.8"
   }
 }

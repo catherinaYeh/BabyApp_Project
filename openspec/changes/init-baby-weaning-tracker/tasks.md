@@ -75,22 +75,22 @@
 
 ## 10. Frontend Foundation (apps/web)
 
-- [ ] 10.1 Vite + React 18 + TS。安裝 react-router-dom、@tanstack/react-query、zustand、tailwindcss、shadcn-ui、framer-motion、lucide-react、clsx
-- [ ] 10.2 Tailwind tokens (色彩見 [component-architecture.md](./component-architecture.md) §6)、Noto Sans TC / Manrope 載入
-- [ ] 10.3 openapi-typescript：`types:gen` 從 `openapi.yaml` 產 `src/types/api.ts`
-- [ ] 10.4 API client `lib/api/client.ts`：fetch wrapper + problem+json 錯誤展開
-- [ ] 10.5 Zustand `useAppStore` (含 persist 寫 activeBabyId)
-- [ ] 10.6 QueryClientProvider 預設 staleTime 30s、retry 1
-- [ ] 10.7 AppShell / TopBar / BottomNav / FabAddFeeding 殼層
+- [x] 10.1 Vite + React 18 + TS。安裝 react-router-dom、@tanstack/react-query、zustand、tailwindcss、lucide-react、clsx (shadcn-ui / framer-motion 後續引入)
+- [x] 10.2 Tailwind tokens (色彩見 [component-architecture.md](./component-architecture.md) §6)、Noto Sans TC / Manrope 載入
+- [x] 10.3 openapi-typescript：`types:gen` 從 `openapi.yaml` 產 `src/types/api.ts`
+- [x] 10.4 API client `lib/api/client.ts`：fetch wrapper + problem+json 錯誤展開
+- [x] 10.5 Zustand `useAppStore` (含 persist 寫 activeBabyId)
+- [x] 10.6 QueryClientProvider 預設 staleTime 30s、retry 1
+- [x] 10.7 AppShell / TopBar / BottomNav / FabAddFeeding 殼層
 
 ## 11. Frontend Features
 
-- [ ] 11.1 共用元件：AllergyBadge、TrialStatusChip、ProgressRing、EmptyState、ErrorState、LoadingSpinner、ConfirmDialog
-- [ ] 11.2 Baby 管理：BabiesPage、BabyEditPage、BabySwitcher + BabyPickerDrawer
+- [x] 11.1 共用元件：AllergyBadge、TrialStatusChip、ProgressRing、EmptyState、Spinner (ErrorState/ConfirmDialog 後續補)
+- [x] 11.2 Baby 管理：BabiesPage、BabyEditPage、BabySwitcher + BabyPickerDrawer
 - [ ] 11.3 食材圖鑑：FoodCatalogPage (CategoryTabs + FoodList + FoodCard)、FoodDetailPage、自訂食材表單
-- [ ] 11.4 餵食紀錄：AddFeedingSheet（搜尋食材 + 預填 + 衝突提示）、FeedingTimeline、編輯/刪除 confirm dialog
+- [x] 11.4 餵食紀錄：AddFeedingSheet（搜尋食材 + 預填 + 衝突提示）、FeedingTimeline、編輯/刪除 confirm dialog (Timeline 待 Phase 11.5)
 - [ ] 11.5 歷史視圖：HistoryPage + ViewToggle + WeekCalendar + MonthCalendar
-- [ ] 11.6 首頁：HomePage 用 useDashboard，StatusCountCard × 4、ProgressRing、RecommendationStrip、RecentUnlockBanner
+- [x] 11.6 首頁：HomePage 用 useDashboard，StatusCountCard × 4、ProgressRing、RecommendationStrip、RecentUnlockBanner
 - [ ] 11.7 徽章：AchievementsPage BadgeWall、BadgeUnlockToast (Framer Motion + confetti)
 - [ ] 11.8 CSV 匯入：ImportPage、CsvDropzone、papaparse preview、dryRun 顯示預估、實際匯入摘要
 - [ ] 11.9 設定：SettingsPage (清空資料、匯出 CSV、版本資訊)

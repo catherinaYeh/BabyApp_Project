@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body {
+    @apply h-full bg-slate-50;
+    font-family: 'Noto Sans TC', system-ui, sans-serif;
+  }
+  body {
+    @apply min-h-screen;
+  }
+  /* Numeric/percent emphasis */
+  .num {
+    font-family: 'Manrope', 'Noto Sans TC', sans-serif;
+    @apply font-semibold tracking-tight;
+  }
+  /* Mobile-first container — keeps content centered & narrow on desktop */
+  .mobile-container {
+    @apply mx-auto w-full max-w-mobile;
+  }
+}
