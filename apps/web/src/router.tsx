@@ -8,6 +8,8 @@ import { BabyEditPage } from '@/pages/BabyEditPage';
 import { FoodCatalogPage } from '@/pages/FoodCatalogPage';
 import { HistoryPage } from '@/pages/HistoryPage';
 import { AchievementsPage } from '@/pages/AchievementsPage';
+import { ImportPage } from '@/pages/ImportPage';
+import { SettingsPage } from '@/pages/SettingsPage';
 
 function Root() {
   return (
@@ -30,6 +32,8 @@ const routes: RouteObject[] = [
       { path: '/foods', element: <FoodCatalogPage /> },
       { path: '/history', element: <HistoryPage /> },
       { path: '/achievements', element: <AchievementsPage /> },
+      { path: '/import', element: <ImportPage /> },
+      { path: '/settings', element: <SettingsPage /> },
     ],
   },
 ];

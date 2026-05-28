@@ -80,7 +80,7 @@ paths:
         '422': { $ref: '#/components/responses/ValidationError' }
 
   /babies/{babyId}:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     get:
       tags: [Babies]
       summary: Get a baby by ID
@@ -171,7 +171,7 @@ paths:
         '422': { $ref: '#/components/responses/ValidationError' }
 
   /foods/{foodId}:
-    parameters: [ { $ref: '#/components/parameters/FoodIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/FoodIdParam' }]
     get:
       tags: [Foods]
       summary: Get a food item
@@ -225,7 +225,7 @@ paths:
 
   # ──────────────────────────────  FEEDINGS  ──────────────────────────────
   /babies/{babyId}/feedings:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     get:
       tags: [Feedings]
       summary: List feeding records of a baby
@@ -321,8 +321,8 @@ paths:
         '204': { description: Deleted }
         '404': { $ref: '#/components/responses/NotFound' }
 
-  /babies/{babyId}/feedings:import:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+  /babies/{babyId}/feedings/import:
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     post:
       tags: [Feedings]
       summary: Batch import feeding records from CSV (skip on conflict)
@@ -360,7 +360,7 @@ paths:
 
   # ────────────────────────────────  TRIALS  ───────────────────────────────
   /babies/{babyId}/trials:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     get:
       tags: [Trials]
       summary: 該寶寶對每種食材的試敏狀態 (從 materialized view 讀取)
@@ -386,7 +386,7 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
 
   /babies/{babyId}/recommendations:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     get:
       tags: [Trials]
       summary: 建議下一個嘗試的食材（低敏優先 + 多元類別）
@@ -427,7 +427,7 @@ paths:
                     items: { $ref: '#/components/schemas/Achievement' }
 
   /babies/{babyId}/achievements:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     get:
       tags: [Achievements]
       summary: 該寶寶已解鎖徽章與所有徽章狀態
@@ -447,7 +447,7 @@ paths:
 
   # ──────────────────────────────  DASHBOARD  ──────────────────────────────
   /babies/{babyId}/dashboard:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     get:
       tags: [Dashboard]
       summary: 首頁總覽（狀態計數 + 最近徽章 + 推薦）
@@ -461,7 +461,7 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
 
   /babies/{babyId}/progress:
-    parameters: [ { $ref: '#/components/parameters/BabyIdParam' } ]
+    parameters: [{ $ref: '#/components/parameters/BabyIdParam' }]
     get:
       tags: [Dashboard]
       summary: 試敏破關進度（unlocked / total，可分 category）
@@ -540,15 +540,15 @@ components:
       type: object
       properties:
         nextCursor: { type: string, nullable: true }
-        total:      { type: integer }
+        total: { type: integer }
 
     # ── Health ───────────────────────────────────────────────────────────
     Health:
       type: object
       required: [status, db, version]
       properties:
-        status:  { type: string, enum: [ok] }
-        db:      { type: string, enum: [ok, down] }
+        status: { type: string, enum: [ok] }
+        db: { type: string, enum: [ok, down] }
         version: { type: string }
 
     # ── Baby ─────────────────────────────────────────────────────────────
@@ -556,25 +556,25 @@ components:
       type: object
       required: [id, name, birthDate, ageMonth, avatarColor, createdAt]
       properties:
-        id:           { type: string, format: uuid }
-        name:         { type: string, minLength: 1, maxLength: 30 }
-        birthDate:    { type: string, format: date }
-        ageMonth:     { type: integer, description: 動態計算 }
-        avatarColor:  { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
-        createdAt:    { type: string, format: date-time }
-        updatedAt:    { type: string, format: date-time }
+        id: { type: string, format: uuid }
+        name: { type: string, minLength: 1, maxLength: 30 }
+        birthDate: { type: string, format: date }
+        ageMonth: { type: integer, description: 動態計算 }
+        avatarColor: { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
     BabyCreate:
       type: object
       required: [name, birthDate]
       properties:
-        name:        { type: string, minLength: 1, maxLength: 30 }
-        birthDate:   { type: string, format: date }
+        name: { type: string, minLength: 1, maxLength: 30 }
+        birthDate: { type: string, format: date }
         avatarColor: { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
     BabyUpdate:
       type: object
       properties:
-        name:        { type: string, minLength: 1, maxLength: 30 }
-        birthDate:   { type: string, format: date }
+        name: { type: string, minLength: 1, maxLength: 30 }
+        birthDate: { type: string, format: date }
         avatarColor: { type: string, pattern: '^#[0-9A-Fa-f]{6}$' }
     BabyListResponse:
       type: object
@@ -587,25 +587,25 @@ components:
       type: object
       required: [id, name, category, allergyRisk, isSystem, createdAt]
       properties:
-        id:          { type: string, format: uuid }
-        name:        { type: string, minLength: 1, maxLength: 30 }
-        category:    { $ref: '#/components/schemas/FoodCategory' }
+        id: { type: string, format: uuid }
+        name: { type: string, minLength: 1, maxLength: 30 }
+        category: { $ref: '#/components/schemas/FoodCategory' }
         allergyRisk: { $ref: '#/components/schemas/AllergyRisk' }
-        isSystem:    { type: boolean }
-        createdAt:   { type: string, format: date-time }
-        updatedAt:   { type: string, format: date-time }
+        isSystem: { type: boolean }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
     FoodCreate:
       type: object
       required: [name, category, allergyRisk]
       properties:
-        name:        { type: string, minLength: 1, maxLength: 30 }
-        category:    { $ref: '#/components/schemas/FoodCategory' }
+        name: { type: string, minLength: 1, maxLength: 30 }
+        category: { $ref: '#/components/schemas/FoodCategory' }
         allergyRisk: { $ref: '#/components/schemas/AllergyRisk' }
     FoodUpdate:
       type: object
       properties:
-        name:        { type: string, minLength: 1, maxLength: 30 }
-        category:    { $ref: '#/components/schemas/FoodCategory' }
+        name: { type: string, minLength: 1, maxLength: 30 }
+        category: { $ref: '#/components/schemas/FoodCategory' }
         allergyRisk: { $ref: '#/components/schemas/AllergyRisk' }
     FoodListResponse:
       type: object
@@ -618,35 +618,35 @@ components:
       type: object
       required: [id, babyId, foodId, fedAt, amountMl, attemptCount, reaction, createdAt]
       properties:
-        id:           { type: string, format: uuid }
-        babyId:       { type: string, format: uuid }
-        foodId:       { type: string, format: uuid }
+        id: { type: string, format: uuid }
+        babyId: { type: string, format: uuid }
+        foodId: { type: string, format: uuid }
         food:
           allOf:
             - $ref: '#/components/schemas/FoodItem'
           description: 由後端 inline 展開
-        fedAt:        { type: string, format: date-time }
-        amountMl:     { type: integer, minimum: 1, maximum: 1000 }
+        fedAt: { type: string, format: date-time }
+        amountMl: { type: integer, minimum: 1, maximum: 1000 }
         attemptCount: { type: integer, minimum: 1 }
-        reaction:     { $ref: '#/components/schemas/Reaction' }
-        note:         { type: string, nullable: true, maxLength: 500 }
-        createdAt:    { type: string, format: date-time }
+        reaction: { $ref: '#/components/schemas/Reaction' }
+        note: { type: string, nullable: true, maxLength: 500 }
+        createdAt: { type: string, format: date-time }
     FeedingCreate:
       type: object
       required: [foodId, fedAt, amountMl]
       properties:
-        foodId:    { type: string, format: uuid }
-        fedAt:     { type: string, format: date-time }
-        amountMl:  { type: integer, minimum: 1, maximum: 1000 }
-        reaction:  { $ref: '#/components/schemas/Reaction', default: NONE }
-        note:      { type: string, maxLength: 500 }
+        foodId: { type: string, format: uuid }
+        fedAt: { type: string, format: date-time }
+        amountMl: { type: integer, minimum: 1, maximum: 1000 }
+        reaction: { $ref: '#/components/schemas/Reaction', default: NONE }
+        note: { type: string, maxLength: 500 }
     FeedingUpdate:
       type: object
       properties:
-        fedAt:     { type: string, format: date-time }
-        amountMl:  { type: integer, minimum: 1, maximum: 1000 }
-        reaction:  { $ref: '#/components/schemas/Reaction' }
-        note:      { type: string, maxLength: 500 }
+        fedAt: { type: string, format: date-time }
+        amountMl: { type: integer, minimum: 1, maximum: 1000 }
+        reaction: { $ref: '#/components/schemas/Reaction' }
+        note: { type: string, maxLength: 500 }
     FeedingListResponse:
       type: object
       properties:
@@ -657,7 +657,7 @@ components:
       required: [feeding, newlyUnlockedAchievements]
       properties:
         feeding: { $ref: '#/components/schemas/FeedingRecord' }
-        trial:   { $ref: '#/components/schemas/TrialState' }
+        trial: { $ref: '#/components/schemas/TrialState' }
         newlyUnlockedAchievements:
           type: array
           items: { $ref: '#/components/schemas/Achievement' }
@@ -668,27 +668,27 @@ components:
       required: [imported, skipped, errors]
       properties:
         imported: { type: integer, description: 成功匯入列數 }
-        skipped:  { type: integer, description: 因衝突跳過列數 }
+        skipped: { type: integer, description: 因衝突跳過列數 }
         errors:
           type: array
           items:
             type: object
             required: [row, message]
             properties:
-              row:     { type: integer }
+              row: { type: integer }
               message: { type: string }
-              raw:     { type: object, additionalProperties: true }
+              raw: { type: object, additionalProperties: true }
 
     # ── Trial State ──────────────────────────────────────────────────────
     TrialState:
       type: object
       required: [foodId, status, attempts, hasReaction]
       properties:
-        foodId:      { type: string, format: uuid }
-        food:        { $ref: '#/components/schemas/FoodItem' }
-        status:      { $ref: '#/components/schemas/TrialStatus' }
-        attempts:    { type: integer, minimum: 0 }
-        lastFedAt:   { type: string, format: date-time, nullable: true }
+        foodId: { type: string, format: uuid }
+        food: { $ref: '#/components/schemas/FoodItem' }
+        status: { $ref: '#/components/schemas/TrialStatus' }
+        attempts: { type: integer, minimum: 0 }
+        lastFedAt: { type: string, format: date-time, nullable: true }
         hasReaction: { type: boolean }
 
     # ── Achievement ──────────────────────────────────────────────────────
@@ -696,11 +696,11 @@ components:
       type: object
       required: [id, code, name, description, icon, condition]
       properties:
-        id:          { type: string, format: uuid }
-        code:        { type: string, example: UNLOCK_10_VEG }
-        name:        { type: string }
+        id: { type: string, format: uuid }
+        code: { type: string, example: UNLOCK_10_VEG }
+        name: { type: string }
         description: { type: string }
-        icon:        { type: string, description: 圖示識別碼或 emoji }
+        icon: { type: string, description: 圖示識別碼或 emoji }
         condition:
           type: object
           oneOf:
@@ -714,41 +714,41 @@ components:
       type: object
       required: [type, category, count]
       properties:
-        type:     { type: string, enum: [UNLOCK_COUNT_BY_CATEGORY] }
+        type: { type: string, enum: [UNLOCK_COUNT_BY_CATEGORY] }
         category: { $ref: '#/components/schemas/FoodCategory' }
-        count:    { type: integer, minimum: 1 }
+        count: { type: integer, minimum: 1 }
     CondUnlockCountByRisk:
       type: object
       required: [type, risk, count]
       properties:
-        type:  { type: string, enum: [UNLOCK_COUNT_BY_RISK] }
-        risk:  { $ref: '#/components/schemas/AllergyRisk' }
+        type: { type: string, enum: [UNLOCK_COUNT_BY_RISK] }
+        risk: { $ref: '#/components/schemas/AllergyRisk' }
         count: { type: integer, minimum: 1 }
     CondFirstFeedingByAge:
       type: object
       required: [type, ageMonth]
       properties:
-        type:     { type: string, enum: [FIRST_FEEDING_BY_AGE] }
+        type: { type: string, enum: [FIRST_FEEDING_BY_AGE] }
         ageMonth: { type: integer, minimum: 0, maximum: 36 }
     CondTotalUnlock:
       type: object
       required: [type, count]
       properties:
-        type:  { type: string, enum: [TOTAL_UNLOCK] }
+        type: { type: string, enum: [TOTAL_UNLOCK] }
         count: { type: integer, minimum: 1 }
     BabyAchievement:
       type: object
       required: [achievement, unlocked]
       properties:
         achievement: { $ref: '#/components/schemas/Achievement' }
-        unlocked:    { type: boolean }
-        unlockedAt:  { type: string, format: date-time, nullable: true }
+        unlocked: { type: boolean }
+        unlockedAt: { type: string, format: date-time, nullable: true }
         progress:
           type: object
           description: 進度提示 (依條件型別不同欄位)
           properties:
             current: { type: integer }
-            target:  { type: integer }
+            target: { type: integer }
 
     # ── Dashboard / Progress ─────────────────────────────────────────────
     Dashboard:
@@ -759,8 +759,8 @@ components:
         statusCounts:
           type: object
           properties:
-            UNTRIED:  { type: integer }
-            TRYING:   { type: integer }
+            UNTRIED: { type: integer }
+            TRYING: { type: integer }
             UNLOCKED: { type: integer }
             ALLERGIC: { type: integer }
         progress: { $ref: '#/components/schemas/Progress' }
@@ -775,8 +775,8 @@ components:
       required: [unlocked, total, percent, byCategory]
       properties:
         unlocked: { type: integer }
-        total:    { type: integer }
-        percent:  { type: number, format: float, minimum: 0, maximum: 100 }
+        total: { type: integer }
+        percent: { type: number, format: float, minimum: 0, maximum: 100 }
         byCategory:
           type: array
           items:
@@ -785,17 +785,17 @@ components:
             properties:
               category: { $ref: '#/components/schemas/FoodCategory' }
               unlocked: { type: integer }
-              total:    { type: integer }
+              total: { type: integer }
 
     # ── Error (RFC 7807) ─────────────────────────────────────────────────
     Problem:
       type: object
       required: [type, title, status]
       properties:
-        type:     { type: string, format: uri }
-        title:    { type: string }
-        status:   { type: integer }
-        detail:   { type: string }
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
         instance: { type: string, format: uri }
     ValidationProblem:
       allOf:
@@ -808,5 +808,5 @@ components:
                 type: object
                 required: [path, message]
                 properties:
-                  path:    { type: string }
+                  path: { type: string }
                   message: { type: string }

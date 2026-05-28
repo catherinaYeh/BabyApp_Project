@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, Plus, History, Trophy } from 'lucide-react';
+import { Home, BookOpen, Plus, History, Trophy, Settings } from 'lucide-react';
 import { BabySwitcher } from '@/components/baby/BabySwitcher';
 import { BabyPickerDrawer } from '@/components/baby/BabyPickerDrawer';
 import { useAppStore } from '@/lib/store';
@@ -19,12 +19,21 @@ export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className="mobile-container relative flex min-h-screen flex-col pb-24">
       <header className="sticky top-0 z-30 border-b border-bark-faded/20 bg-cream/85 px-5 py-3 backdrop-blur">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="leading-tight">
             <p className="serif text-lg font-semibold text-bark">寶寶的食物冒險</p>
             <p className="text-[10px] tracking-[0.2em] text-bark-soft">A WEANING JOURNAL</p>
           </div>
-          <BabySwitcher />
+          <div className="flex items-center gap-1">
+            <BabySwitcher />
+            <Link
+              to="/settings"
+              aria-label="設定"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-bark-faded/30 bg-cream-card text-bark-soft transition-colors hover:bg-cream-deep"
+            >
+              <Settings size={16} />
+            </Link>
+          </div>
         </div>
       </header>
 

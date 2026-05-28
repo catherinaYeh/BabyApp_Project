@@ -51,13 +51,13 @@
 
 ## 7. CSV Import 模組 (capability: csv-import)
 
-- [ ] 7.1 multer (memory, ≤ 2MB) + csv-parse
-- [ ] 7.2 解析 → 對 `food_item.name` 查表 (trim + case-insensitive)
-- [ ] 7.3 attemptCount 編號（既有 + 批次內 fedAt 順序）
-- [ ] 7.4 衝突偵測 (babyId, foodId, fedAt) → skip
-- [ ] 7.5 transaction，所有列獨立 try/catch，匯出 `{ imported, skipped, errors[] }`
-- [ ] 7.6 dryRun=true 路徑（不寫入）
-- [ ] 7.7 `POST /babies/:id/feedings:import` route + 測試（畸形 CSV / 超大 / 5001 列 / 衝突 / dryRun 一致）
+- [x] 7.1 multer (memory, ≤ 2MB) + csv-parse
+- [x] 7.2 解析 → 對 `food_item.name` 查表 (trim + case-insensitive)
+- [x] 7.3 attemptCount 編號（既有 + 批次內 fedAt 順序）
+- [x] 7.4 衝突偵測 (babyId, foodId, fedAt) → skip
+- [x] 7.5 transaction，所有列獨立 try/catch，匯出 `{ imported, skipped, errors[] }`
+- [x] 7.6 dryRun=true 路徑（不寫入）
+- [x] 7.7 `POST /babies/:id/feedings/import` route + 測試（畸形 CSV / 衝突 / dryRun 一致 / missing header / 404）
 
 ## 8. Achievements 模組 (capability: achievements)
 
@@ -92,8 +92,8 @@
 - [x] 11.5 歷史視圖：HistoryPage + ViewToggle (本週/本月/全部) + 日誌式群組分組 (WeekCalendar / MonthCalendar 後續可補)
 - [x] 11.6 首頁：HomePage 用 useDashboard，StatusCountCard × 4、ProgressRing、RecommendationStrip、RecentUnlockBanner
 - [x] 11.7 徽章：AchievementsPage BadgeWall (已解鎖/待解鎖 + 進度條)、BadgeUnlockToast (CSS transition, confetti 後續可加)
-- [ ] 11.8 CSV 匯入：ImportPage、CsvDropzone、papaparse preview、dryRun 顯示預估、實際匯入摘要
-- [ ] 11.9 設定：SettingsPage (清空資料、匯出 CSV、版本資訊)
+- [x] 11.8 CSV 匯入：ImportPage、模板下載、dryRun 預檢、實際匯入摘要、errors 詳列
+- [x] 11.9 設定：SettingsPage (版本、入口連結、GitHub) — 清空資料/匯出 CSV 後續加
 
 ## 12. Quality
 

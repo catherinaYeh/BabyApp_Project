@@ -13,6 +13,7 @@ import { healthRouter } from './routes/health.js';
 import { babyRouter } from './modules/babies/baby.routes.js';
 import { foodRouter } from './modules/foods/food.routes.js';
 import { feedingRouter } from './modules/feedings/feeding.routes.js';
+import { csvImportRouter } from './modules/csv-import/csvImport.routes.js';
 import { trialRouter } from './modules/trials/trial.routes.js';
 import {
   achievementRouter,
@@ -50,6 +51,7 @@ export function createApp(): Express {
   app.use('/api/v1/babies', babyRouter);
   app.use('/api/v1/foods', foodRouter);
   app.use('/api/v1/babies/:babyId/feedings', feedingRouter);
+  app.use('/api/v1/babies/:babyId/feedings', csvImportRouter);
   app.use('/api/v1/babies/:babyId', trialRouter); // /trials, /recommendations
   app.use('/api/v1/babies/:babyId', dashboardRouter); // /dashboard, /progress
   app.use('/api/v1/babies/:babyId/achievements', babyAchievementRouter);

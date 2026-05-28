@@ -141,7 +141,7 @@ export interface paths {
     patch: operations['updateFeeding'];
     trace?: never;
   };
-  '/babies/{babyId}/feedings:import': {
+  '/babies/{babyId}/feedings/import': {
     parameters: {
       query?: never;
       header?: never;
