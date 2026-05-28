@@ -1,25 +1,29 @@
 # Baby Weaning Gamified Tracker (寶寶副食品試敏小遊戲)
 
-Mobile-first Web App，記錄並追蹤寶寶副食品試敏歷程。詳細規格見 [openspec/changes/init-baby-weaning-tracker/](openspec/changes/init-baby-weaning-tracker/)。
+Mobile-first Web App，記錄並追蹤寶寶副食品試敏歷程。
+規格見 [openspec/changes/init-baby-weaning-tracker/](openspec/changes/init-baby-weaning-tracker/)。
 
 ## 技術棧
 
-| 層       | 工具                                                                                   |
-| -------- | -------------------------------------------------------------------------------------- |
-| Backend  | Node 20 · Express 4 · Prisma 5 · PostgreSQL 15 · Zod · Pino                            |
-| Frontend | React 18 · Vite · TanStack Query · Zustand · Tailwind · shadcn/ui (尚未 bootstrapping) |
-| Monorepo | pnpm workspaces · Turborepo · TypeScript 5                                             |
-| Spec     | OpenSpec (spec-driven schema)                                                          |
+| 層       | 工具                                                                 |
+| -------- | -------------------------------------------------------------------- |
+| Backend  | Node 20 · Express 4 · Prisma 5 · PostgreSQL 15 · Zod · Pino          |
+| Frontend | React 18 · Vite · TanStack Query · Zustand · Tailwind                |
+| Monorepo | pnpm workspaces · Turborepo · TypeScript 5                           |
+| Spec     | OpenSpec (spec-driven schema)                                        |
+| 測試     | Jest + supertest (API) · Vitest + Testing Library (Web) · Playwright |
+| 部署     | Docker (multi-stage) + Caddy (web 靜態 + /api 反向代理) + PostgreSQL |
 
 ## 前置需求
 
 - Node.js ≥ 20.18.0
 - pnpm 9
-- Docker Desktop (跑 PostgreSQL)
+- Docker Desktop（跑 PostgreSQL）
 
-> 本機 Node 20 安裝在 `~/.local/nodejs-20/`（非 brew）。請在 shell 設定 `PATH="$HOME/.local/nodejs-20/bin:$PATH"`，或用 nvm/asdf 切換。
+> 本機 Node 20 安裝於 `~/.local/nodejs-20/`（非 brew）。請在 shell 設定
+> `export PATH="$HOME/.local/nodejs-20/bin:$PATH"`，或用 nvm/asdf 切換。
 
-## 起手式
+## 起手式 (Dev)
 
 ```bash
 # 1. 安裝套件
@@ -28,28 +32,84 @@ pnpm install
 # 2. 啟動 PostgreSQL + Adminer
 docker compose up -d
 
-# 3. 套用 migrations + 產生 Prisma Client
+# 3. 套用 migrations + seed
 cd apps/api
-cp .env.example .env          # 第一次而已
+cp .env.example .env                # 第一次而已
 pnpm prisma migrate deploy
 pnpm prisma generate
+SEED_DEMO=true pnpm db:seed         # 80 食材 + 13 徽章 + 1 示範寶寶 + 20 餵食紀錄
+cd ../..
 
 # 4. 啟動 API
-pnpm dev                      # http://localhost:3000
+pnpm --filter @baby/api dev         # http://localhost:3000
+
+# 5. 啟動 Web（另一個 shell）
+pnpm --filter @baby/web dev         # http://localhost:5173
 ```
 
-開啟 [http://localhost:3000/healthz](http://localhost:3000/healthz) 驗證、API 文件在 [http://localhost:3000/api/v1/docs/](http://localhost:3000/api/v1/docs/)，Adminer 在 [http://localhost:8080](http://localhost:8080)。
+- API: <http://localhost:3000/healthz>
+- Swagger UI: <http://localhost:3000/api/v1/docs/>
+- Web: <http://localhost:5173>
+- Adminer: <http://localhost:8080>（伺服器 postgres、user baby、pwd baby_dev）
+
+> 如果只要看 demo，跳過 `SEED_DEMO=true` 之後在 UI 自己建寶寶也可以。
 
 ## 測試
 
 ```bash
 # 建立測試資料庫 (一次性)
 docker exec baby-postgres psql -U baby -d postgres -c "CREATE DATABASE baby_weaning_test;"
-DATABASE_URL="postgresql://baby:baby_dev@localhost:5432/baby_weaning_test?schema=public" pnpm --filter @baby/api prisma migrate deploy
+DATABASE_URL="postgresql://baby:baby_dev@localhost:5432/baby_weaning_test?schema=public" \
+  pnpm --filter @baby/api prisma migrate deploy
 
-# 跑測試
+# API: Jest + supertest（80+ 測試, 含 csv import）
 pnpm --filter @baby/api test
+
+# 覆蓋率（target ≥ 80% lines/functions）
+pnpm --filter @baby/api exec jest --runInBand --coverage
+
+# Web: Vitest + Testing Library (元件 + store)
+pnpm --filter @baby/web test
+
+# E2E: Playwright (需 api + web 同時跑著)
+pnpm --filter @baby/web exec playwright install --with-deps   # 首次
+pnpm --filter @baby/web test:e2e
 ```
+
+## Lighthouse
+
+`pnpm --filter @baby/web build && pnpm --filter @baby/web preview` 啟動 preview 後：
+
+```bash
+npx lighthouse http://localhost:4173 --preset=desktop --view
+# 或 mobile:
+npx lighthouse http://localhost:4173 --view
+```
+
+目標 ≥ 90 Performance / Accessibility / Best Practices。
+
+## 部署 (Single-host with Docker)
+
+```bash
+# 1. 建 web 靜態 → apps/web/dist/
+pnpm --filter @baby/web build
+
+# 2. 設 .env 給 prod (用強密碼)
+echo 'POSTGRES_PASSWORD=請改我' > .env
+echo 'PUBLIC_ORIGIN=http://localhost' >> .env
+
+# 3. 起 stack: postgres + api + caddy
+docker compose -f docker-compose.prod.yml up -d --build
+
+# 4. Migrate + (選擇性) seed
+docker compose -f docker-compose.prod.yml exec api \
+  node ./node_modules/prisma/build/index.js migrate deploy
+docker compose -f docker-compose.prod.yml exec -e SEED_DEMO=true api \
+  node ./node_modules/tsx/dist/cli.mjs prisma/seed.ts
+```
+
+打開 <http://localhost>，API 在 `/api/v1/...`，web 在 `/`。要上 HTTPS：把 `Caddyfile`
+的 `:80` 換成你的網域（如 `babyapp.example.com`），Caddy 會自動申請憑證。
 
 ## 目錄結構
 
@@ -57,23 +117,39 @@ pnpm --filter @baby/api test
 .
 ├── apps/
 │   ├── api/                 # Node + Express + Prisma 後端
-│   └── web/                 # React 前端（待 Phase 10 起手）
+│   │   ├── Dockerfile
+│   │   ├── prisma/seed/     # foods / achievements / demo
+│   │   └── src/modules/     # babies, foods, feedings, csv-import, trials, achievements, dashboard
+│   └── web/                 # React + Vite 前端
+│       ├── e2e/             # Playwright
+│       ├── src/components/  # layout / common / baby / feeding / achievement
+│       ├── src/pages/       # Home / Babies / Foods / History / Achievements / Import / Settings
+│       └── tests/           # Vitest
 ├── packages/
-│   └── shared-types/        # 共用型別（之後從 openapi.yaml 產出）
+│   └── shared-types/        # 共用型別 placeholder
 ├── openspec/
 │   └── changes/init-baby-weaning-tracker/   # 規格與任務追蹤
-├── docker-compose.yml
-├── package.json             # workspace root
-├── pnpm-workspace.yaml
-└── turbo.json
+├── .github/workflows/ci.yml
+├── Caddyfile
+├── docker-compose.yml       # dev: postgres + adminer
+├── docker-compose.prod.yml  # prod: postgres + api + caddy
+└── pnpm-workspace.yaml
 ```
 
 ## 開發流程
 
-1. 看 [tasks.md](openspec/changes/init-baby-weaning-tracker/tasks.md) 找下一個 task
+1. 看 [openspec/changes/.../tasks.md](openspec/changes/init-baby-weaning-tracker/tasks.md) 找下一個 task
 2. 動工
 3. 把 task 從 `[ ]` 改成 `[x]`
-4. `pnpm --filter @baby/api typecheck && pnpm --filter @baby/api test`
-5. commit (commitlint 會擋格式錯誤的訊息)
+4. `pnpm --filter @baby/api typecheck test && pnpm --filter @baby/web typecheck test`
+5. commit（commitlint + husky 會擋掉 `feat:` 之外的格式）
+6. push → CI 跑 `.github/workflows/ci.yml`：api / web / openspec validate
 
-完整 capability spec 在 [openspec/changes/init-baby-weaning-tracker/specs/](openspec/changes/init-baby-weaning-tracker/specs/)。
+## 規格
+
+- [proposal.md](openspec/changes/init-baby-weaning-tracker/proposal.md)
+- [design.md](openspec/changes/init-baby-weaning-tracker/design.md)
+- [openapi.yaml](openspec/changes/init-baby-weaning-tracker/openapi.yaml)
+- [component-architecture.md](openspec/changes/init-baby-weaning-tracker/component-architecture.md)
+- [tasks.md](openspec/changes/init-baby-weaning-tracker/tasks.md)
+- [specs/](openspec/changes/init-baby-weaning-tracker/specs/) — 7 個 capability spec

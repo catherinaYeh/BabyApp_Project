@@ -1,0 +1,63 @@
+# Production-style stack (still single-host). Brings up postgres, api, and
+# caddy. caddy serves the prebuilt web static (apps/web/dist) and reverse-
+# proxies /api to the api container, optionally with auto-HTTPS if you
+# uncomment the address line and DNS to a real domain.
+#
+# Build & run:
+#   pnpm --filter @baby/web build       # produces apps/web/dist
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Defaults: web at http://localhost, api at http://localhost/api/v1.
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: baby
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-baby_prod}
+      POSTGRES_DB: baby_weaning
+      TZ: Asia/Taipei
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U baby -d baby_weaning']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://baby:${POSTGRES_PASSWORD:-baby_prod}@postgres:5432/baby_weaning?schema=public
+      CORS_ORIGIN: ${PUBLIC_ORIGIN:-http://localhost}
+      LOG_LEVEL: info
+    expose:
+      - '3000'
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./apps/web/dist:/srv/web:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+volumes:
+  postgres-data:
+  caddy-data:
+  caddy-config:

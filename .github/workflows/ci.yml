@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  api:
+    name: API · lint · typecheck · test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: baby
+          POSTGRES_PASSWORD: baby_dev
+          POSTGRES_DB: baby_weaning_test
+        options: >-
+          --health-cmd "pg_isready -U baby -d baby_weaning_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgresql://baby:baby_dev@localhost:5432/baby_weaning_test?schema=public
+      NODE_ENV: test
+      PORT: 3001
+      CORS_ORIGIN: http://localhost:5173
+      LOG_LEVEL: fatal
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.x'
+          cache: pnpm
+      - run: pnpm install --filter @baby/api... --frozen-lockfile
+      - run: pnpm --filter @baby/api exec prisma migrate deploy
+      - run: pnpm --filter @baby/api typecheck
+      - run: pnpm --filter @baby/api test
+
+  web:
+    name: Web · typecheck · build · test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.x'
+          cache: pnpm
+      - run: pnpm install --filter @baby/web... --frozen-lockfile
+      - run: pnpm --filter @baby/web types:gen
+      - run: pnpm --filter @baby/web typecheck
+      - run: pnpm --filter @baby/web test
+      - run: pnpm --filter @baby/web build
+
+  openspec:
+    name: OpenSpec · validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.18.x'
+      - name: Install openspec CLI
+        run: npm install -g @fission-ai/openspec@latest
+      - run: openspec validate init-baby-weaning-tracker --strict

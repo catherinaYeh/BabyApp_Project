@@ -1,0 +1,26 @@
+# BabyApp web + API reverse proxy.
+#
+# Replace `:80` below with your real hostname (e.g. babyapp.example.com) to
+# enable Caddy's automatic HTTPS. The same config works locally on :80.
+
+:80 {
+	encode zstd gzip
+
+	# API: forward /api/* to the api container.
+	handle_path /api/* {
+		reverse_proxy api:3000 {
+			header_up Host {host}
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# Health: forward /healthz directly (used by docker / probes).
+	handle /healthz {
+		reverse_proxy api:3000
+	}
+
+	# SPA: serve static + fall back to index.html for client-side routing.
+	root * /srv/web
+	try_files {path} /index.html
+	file_server
+}

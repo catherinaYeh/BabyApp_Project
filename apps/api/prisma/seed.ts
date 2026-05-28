@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { seedFoods } from './seed/foods.js';
 import { seedAchievements } from './seed/achievements.js';
+import { seedDemo } from './seed/demo.js';
 
 const prisma = new PrismaClient();
 
@@ -49,6 +50,11 @@ async function main(): Promise<void> {
     `Seed complete: foods=${foodCreated}c/${foodUpdated}u (total ${seedFoods.length}), ` +
       `achievements=${achCreated}c/${achUpdated}u (total ${seedAchievements.length})`,
   );
+
+  // Demo data is opt-in via SEED_DEMO=true so it doesn't bloat test DBs.
+  if (process.env.SEED_DEMO === 'true') {
+    await seedDemo(prisma);
+  }
 }
 
 main()
