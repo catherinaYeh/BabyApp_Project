@@ -17,5 +17,6 @@ export default defineConfig({
         changeOrigin: true,
       },
     },
+    allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app', '.trycloudflare.com'],
   },
 });

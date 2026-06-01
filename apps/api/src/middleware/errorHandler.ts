@@ -3,7 +3,6 @@ import { Prisma } from '@prisma/client';
 import { ZodError } from 'zod';
 import { ConflictError, HttpError, NotFoundError, ValidationError } from '../lib/problems.js';
 import { logger } from '../lib/logger.js';
-import { PrismaClientKnownRequestError } from '@prisma/client';
 
 const PROBLEM_JSON = 'application/problem+json';
 
@@ -26,7 +25,7 @@ export const errorHandler: ErrorRequestHandler = (err, req, res, _next) => {
   }
 
   // 3) Prisma known errors
-  if (err instanceof PrismaClientKnownRequestError) {
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
     if (err.code === 'P2002') {
       const e = new ConflictError(
         `Unique constraint violated on ${
