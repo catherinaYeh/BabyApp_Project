@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@9.0.0",
   "engines": {
-    "node": ">=20.18.0"
+    "node": "20.x"
   },
   "scripts": {
     "dev": "turbo run dev",
@@ -14,7 +14,8 @@
     "typecheck": "turbo run typecheck",
     "types:gen": "turbo run types:gen",
     "format": "prettier --write \"**/*.{ts,tsx,js,json,md,yaml,yml}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "postinstall": "turbo run prisma:generate"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
