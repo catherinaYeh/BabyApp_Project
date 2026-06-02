@@ -13,8 +13,11 @@ COPY apps/api/package.json ./apps/api/
 COPY apps/web/package.json ./apps/web/
 COPY packages/shared-types/package.json ./packages/shared-types/
 
+# --ignore-scripts 跳過 root 的 postinstall(turbo prisma:generate)與 prepare(husky):
+# 這個階段原始碼/schema/turbo.json 都還沒複製進來,讓它們執行會失敗。
+# Prisma client 由下面明確的 `pnpm prisma generate` 在原始碼複製後產生。
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
-    pnpm install --filter @baby/api... --frozen-lockfile
+    pnpm install --filter @baby/api... --frozen-lockfile --ignore-scripts
 
 # Now copy source + prisma + the OpenAPI yaml the api reads at runtime.
 COPY apps/api ./apps/api
