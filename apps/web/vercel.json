@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "https://babyappapi3-hdy0ym9r3-catherina-s-projects.vercel.app/api/$1"
+    }
+  ]
+}
