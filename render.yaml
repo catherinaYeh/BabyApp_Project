@@ -1,0 +1,33 @@
+# Render Blueprint — deploys the @baby/api service + a managed PostgreSQL.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# The Docker build context is the repo ROOT (the Dockerfile copies
+# pnpm-workspace.yaml / lockfile / packages), so dockerContext must be ".".
+databases:
+  - name: babyapp-db
+    databaseName: babyapp
+    plan: free # NOTE: Render 免費 Postgres 約 30 天後過期,長期建議升級或改用 Neon/Supabase
+
+services:
+  - type: web
+    name: babyapp-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    envVars:
+      # DATABASE_URL 由上面的資料庫自動注入(內部連線字串)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: babyapp-db
+          property: connectionString
+      - key: NODE_ENV
+        value: production
+      - key: LOG_LEVEL
+        value: info
+      # 前端的 Vercel 正式網域;若 rewrite 走 server-side proxy 其實用不到 CORS,
+      # 但保留以支援前端直接呼叫的情境。多個來源用逗號分隔。
+      - key: CORS_ORIGIN
+        value: https://babyappweb2.vercel.app
+      # 不要設 PORT:Render 會自動注入 PORT,API 的 env.PORT 會自動讀取它。
