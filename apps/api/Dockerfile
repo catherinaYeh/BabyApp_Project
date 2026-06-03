@@ -33,16 +33,20 @@ RUN pnpm build
 FROM node:20-slim AS runtime
 
 ENV NODE_ENV=production
-WORKDIR /app
+# Keep the pnpm workspace layout: apps/api/node_modules holds symlinks that
+# point at ../../../node_modules/.pnpm/..., so both trees must live at the
+# same relative paths or module resolution (prisma, express, ...) breaks.
+WORKDIR /repo/apps/api
 
-# pull only what we need to run
-COPY --from=builder /repo/node_modules ./node_modules
+COPY --from=builder /repo/node_modules /repo/node_modules
+COPY --from=builder /repo/apps/api/node_modules ./node_modules
 COPY --from=builder /repo/apps/api/dist ./dist
 COPY --from=builder /repo/apps/api/prisma ./prisma
-COPY --from=builder /repo/apps/api/package.json ./
+COPY --from=builder /repo/apps/api/package.json ./package.json
+# openapi.ts reads cwd/../../openspec/... at runtime → /repo/openspec/...
 COPY --from=builder /repo/openspec/changes/init-baby-weaning-tracker/openapi.yaml \
-     /openspec/changes/init-baby-weaning-tracker/openapi.yaml
+     /repo/openspec/changes/init-baby-weaning-tracker/openapi.yaml
 
 # Run prisma migrations on container start, then start the API.
 EXPOSE 3000
-CMD ["sh", "-c", "node ./node_modules/prisma/build/index.js migrate deploy && node dist/index.js"]
+CMD ["sh", "-c", "node node_modules/prisma/build/index.js migrate deploy && node dist/index.js"]
