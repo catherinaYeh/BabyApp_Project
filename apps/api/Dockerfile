@@ -1,6 +1,10 @@
 # --- Builder stage ---------------------------------------------------------
 FROM node:20-slim AS builder
 
+# Prisma engines need libssl/openssl; node:20-slim ships without it.
+RUN apt-get update -y && apt-get install -y openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 ENV PNPM_HOME=/root/.local/share/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 RUN corepack enable
@@ -31,6 +35,10 @@ RUN pnpm build
 
 # --- Runtime stage ---------------------------------------------------------
 FROM node:20-slim AS runtime
+
+# Prisma schema/query engines need libssl/openssl at runtime too.
+RUN apt-get update -y && apt-get install -y openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production
 # Keep the pnpm workspace layout: apps/api/node_modules holds symlinks that
