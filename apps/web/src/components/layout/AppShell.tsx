@@ -1,9 +1,10 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, BookOpen, Plus, History, Trophy, Settings } from 'lucide-react';
 import { BabySwitcher } from '@/components/baby/BabySwitcher';
 import { BabyPickerDrawer } from '@/components/baby/BabyPickerDrawer';
 import { useAppStore } from '@/lib/store';
+import { applyTheme } from '@/lib/theme';
 
 const TABS = [
   { to: '/', label: '首頁', icon: Home },
@@ -15,6 +16,11 @@ const TABS = [
 export function AppShell({ children }: { children: ReactNode }) {
   const location = useLocation();
   const openAdd = useAppStore((s) => s.openAddFeedingSheet);
+  const theme = useAppStore((s) => s.theme);
+
+  useEffect(() => {
+    applyTheme(theme);
+  }, [theme]);
 
   return (
     <div className="mobile-container relative flex min-h-screen flex-col pb-24">

@@ -1,12 +1,46 @@
 import { Link } from 'react-router-dom';
 import { ChevronRight, Upload, Heart, Github } from 'lucide-react';
+import { useAppStore } from '@/lib/store';
+import { THEME_OPTIONS } from '@/lib/theme';
 
 const APP_VERSION = '0.1.0';
 
 export function SettingsPage() {
+  const theme = useAppStore((s) => s.theme);
+  const setTheme = useAppStore((s) => s.setTheme);
+
   return (
     <div className="space-y-4">
       <h2 className="serif text-xl font-semibold text-bark">設定</h2>
+
+      <section className="space-y-2">
+        <p className="text-[10px] tracking-[0.2em] text-bark-soft">主題風格 THEME</p>
+        <div className="grid grid-cols-3 gap-3">
+          {THEME_OPTIONS.map((t) => (
+            <button
+              key={t.value}
+              type="button"
+              onClick={() => setTheme(t.value)}
+              className={`overflow-hidden rounded-2xl border-2 bg-cream-card text-left shadow-paper transition-transform active:scale-95 ${
+                theme === t.value ? 'border-terracotta' : 'border-transparent'
+              }`}
+            >
+              <span
+                className="flex h-14 items-center justify-center text-lg"
+                style={{ background: t.preview }}
+              >
+                {t.icon}
+              </span>
+              <span className="block px-2 py-1.5 text-center">
+                <span className="block text-[11px] font-semibold text-bark">{t.label}</span>
+                <span className="block text-[9px] text-bark-soft">
+                  {theme === t.value ? '✓ 使用中' : '點擊切換'}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
 
       <section className="paper-card divide-y divide-bark-faded/15">
         <Link
