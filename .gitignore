@@ -39,3 +39,6 @@ yarn-debug.log*
 .playwright/
 playwright-report/
 test-results/
+
+# Superpowers brainstorm sessions
+.superpowers/
