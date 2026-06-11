@@ -9,8 +9,7 @@
     font-family: 'Quicksand', 'Noto Sans TC', system-ui, sans-serif;
   }
   body {
-    @apply min-h-screen bg-paper bg-paper;
-    background-attachment: fixed;
+    @apply min-h-screen;
   }
   h1,
   h2,
@@ -36,7 +35,7 @@
   /* "Paper card" — slightly raised cream tile with a subtle hand-drawn vibe. */
   .paper-card {
     @apply rounded-3xl bg-cream-card shadow-paper;
-    border: 1px solid rgba(74, 53, 40, 0.06);
+    border: 1px solid rgb(var(--c-bark) / 0.06);
   }
   /* Ribbon-style heading used in section labels. */
   .ribbon-label {

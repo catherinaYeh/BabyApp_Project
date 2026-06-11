@@ -1,63 +1,32 @@
 import type { Config } from 'tailwindcss';
 
+/** 色票一律指向 themes.css 的 CSS 變數，data-theme 切換整組換色。 */
+const v = (name: string) => `rgb(var(${name}) / <alpha-value>)`;
+
 const config: Config = {
   content: ['./index.html', './src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       colors: {
-        // Storybook palette
-        cream: {
-          DEFAULT: '#FBF6E9', // page bg
-          card: '#FFFCF3', // raised paper
-          deep: '#F2EAD3', // muted cream
-        },
-        bark: {
-          DEFAULT: '#4A3528', // primary text (warm brown)
-          soft: '#7A6354', // secondary text
-          faded: '#B5A493', // tertiary / borders
-        },
+        cream: { DEFAULT: v('--c-cream'), card: v('--c-cream-card'), deep: v('--c-cream-deep') },
+        bark: { DEFAULT: v('--c-bark'), soft: v('--c-bark-soft'), faded: v('--c-bark-faded') },
         terracotta: {
-          DEFAULT: '#D67D5C', // brand / primary action
-          dark: '#B96342',
-          soft: '#F1C8B7',
+          DEFAULT: v('--c-terracotta'),
+          dark: v('--c-terracotta-dark'),
+          soft: v('--c-terracotta-soft'),
         },
-        sage: {
-          DEFAULT: '#9CAF88', // unlocked / success
-          dark: '#7A8E69',
-          soft: '#D4E1C5',
-        },
+        sage: { DEFAULT: v('--c-sage'), dark: v('--c-sage-dark'), soft: v('--c-sage-soft') },
         mustard: {
-          DEFAULT: '#E0AC4C', // progress / trying
-          dark: '#B98724',
-          soft: '#F6E3B7',
+          DEFAULT: v('--c-mustard'),
+          dark: v('--c-mustard-dark'),
+          soft: v('--c-mustard-soft'),
         },
-        blush: {
-          DEFAULT: '#E8A89A', // allergic
-          dark: '#C77866',
-          soft: '#F7D9D2',
-        },
-
-        // Allergy risk uses storybook earth tones
-        allergy: {
-          low: '#9CAF88', // sage
-          medium: '#E0AC4C', // mustard
-          high: '#C77866', // blush dark
-        },
-        // Trial status chips
+        blush: { DEFAULT: v('--c-blush'), dark: v('--c-blush-dark'), soft: v('--c-blush-soft') },
         status: {
-          untried: '#E8DDC9', // warm gray paper
-          trying: '#F6E3B7', // butter
-          unlocked: '#D4E1C5', // sage soft
-          allergic: '#F7D9D2', // blush soft
-        },
-
-        // Legacy aliases kept to avoid touching every file in one go.
-        brand: {
-          DEFAULT: '#D67D5C',
-          dark: '#B96342',
-        },
-        accent: {
-          game: '#E0AC4C',
+          untried: v('--c-status-untried'),
+          trying: v('--c-mustard-soft'),
+          unlocked: v('--c-sage-soft'),
+          allergic: v('--c-blush-soft'),
         },
       },
       fontFamily: {
@@ -72,19 +41,12 @@ const config: Config = {
         mobile: '480px',
       },
       boxShadow: {
-        fab: '0 8px 22px -6px rgba(214, 125, 92, 0.55)',
-        paper: '0 1px 0 rgba(74, 53, 40, 0.06), 0 8px 20px -12px rgba(74, 53, 40, 0.18)',
-        ribbon: '2px 2px 0 rgba(74, 53, 40, 0.12)',
+        fab: 'var(--shadow-fab)',
+        paper: 'var(--shadow-card)',
+        ribbon: 'var(--shadow-ribbon)',
       },
       borderRadius: {
         '4xl': '2.25rem',
-      },
-      backgroundImage: {
-        // Subtle dotted paper texture
-        paper: 'radial-gradient(circle at 1px 1px, rgba(74, 53, 40, 0.06) 1px, transparent 0)',
-      },
-      backgroundSize: {
-        paper: '14px 14px',
       },
     },
   },

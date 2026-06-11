@@ -14,6 +14,7 @@ export function TrialStatusChip({ status, className }: { status: Status; classNa
   const { bg, text, label, Icon } = STYLES[status];
   return (
     <span
+      data-status={status}
       className={clsx(
         'inline-flex items-center gap-1 rounded-full border border-bark-faded/20 px-2.5 py-0.5 text-[11px] font-medium',
         bg,

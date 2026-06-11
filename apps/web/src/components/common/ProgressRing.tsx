@@ -20,7 +20,7 @@ export function ProgressRing({ percent, size = 120, stroke = 10 }: Props) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#F2EAD3"
+          className="stroke-cream-deep"
           strokeWidth={stroke}
         />
         <circle
@@ -28,7 +28,7 @@ export function ProgressRing({ percent, size = 120, stroke = 10 }: Props) {
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#E0AC4C"
+          className="stroke-mustard"
           strokeWidth={stroke}
           strokeDasharray={circumference}
           strokeDashoffset={offset}

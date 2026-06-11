@@ -1,0 +1,238 @@
+/* ============================================================
+   主題 token：RGB 分量存放（供 Tailwind <alpha-value> 使用）。
+   :root = 手帳紙感（預設）；data-theme 切換整組作用域。
+   ============================================================ */
+
+:root {
+  --c-cream: 251 246 233;
+  --c-cream-card: 255 252 243;
+  --c-cream-deep: 242 234 211;
+  --c-bark: 74 53 40;
+  --c-bark-soft: 122 99 84;
+  --c-bark-faded: 181 164 147;
+  --c-terracotta: 214 125 92;
+  --c-terracotta-dark: 185 99 66;
+  --c-terracotta-soft: 241 200 183;
+  --c-sage: 156 175 136;
+  --c-sage-dark: 122 142 105;
+  --c-sage-soft: 212 225 197;
+  --c-mustard: 224 172 76;
+  --c-mustard-dark: 185 135 36;
+  --c-mustard-soft: 246 227 183;
+  --c-blush: 232 168 154;
+  --c-blush-dark: 199 120 102;
+  --c-blush-soft: 247 217 210;
+  --c-status-untried: 232 221 201;
+
+  --shadow-card: 0 1px 0 rgba(74, 53, 40, 0.06), 0 8px 20px -12px rgba(74, 53, 40, 0.18);
+  --shadow-fab: 0 8px 22px -6px rgba(214, 125, 92, 0.55);
+  --shadow-ribbon: 2px 2px 0 rgba(74, 53, 40, 0.12);
+  --grad-primary: none;
+}
+
+/* 🍭 夢幻糖果 */
+[data-theme='candy'] {
+  --c-cream: 255 244 250;
+  --c-cream-card: 255 255 255;
+  --c-cream-deep: 240 235 255;
+  --c-bark: 90 74 110;
+  --c-bark-soft: 154 138 176;
+  --c-bark-faded: 197 186 215;
+  --c-terracotta: 255 143 199;
+  --c-terracotta-dark: 214 102 161;
+  --c-terracotta-soft: 255 214 235;
+  --c-sage: 109 199 138;
+  --c-sage-dark: 61 164 94;
+  --c-sage-soft: 212 247 220;
+  --c-mustard: 255 184 92;
+  --c-mustard-dark: 207 148 48;
+  --c-mustard-soft: 255 240 205;
+  --c-blush: 255 143 170;
+  --c-blush-dark: 214 106 133;
+  --c-blush-soft: 255 224 230;
+  --c-status-untried: 240 235 255;
+
+  --shadow-card: 0 6px 18px rgba(157, 143, 255, 0.22), inset 0 -3px 0 rgba(255, 143, 199, 0.18);
+  --shadow-fab: 0 6px 16px rgba(199, 155, 255, 0.55);
+  --shadow-ribbon: 2px 2px 0 rgba(157, 143, 255, 0.25);
+  --grad-primary: linear-gradient(135deg, #ff9ed2, #c79bff);
+}
+
+/* ✦ 午夜星圖 */
+[data-theme='night'] {
+  --c-cream: 11 16 38;
+  --c-cream-card: 22 27 58;
+  --c-cream-deep: 35 42 84;
+  --c-bark: 243 233 210;
+  --c-bark-soft: 141 147 184;
+  --c-bark-faded: 100 107 145;
+  --c-terracotta: 232 196 106;
+  --c-terracotta-dark: 201 161 78;
+  --c-terracotta-soft: 92 76 38;
+  --c-sage: 168 230 161;
+  --c-sage-dark: 126 191 120;
+  --c-sage-soft: 38 64 44;
+  --c-mustard: 255 217 138;
+  --c-mustard-dark: 230 184 92;
+  --c-mustard-soft: 77 62 28;
+  --c-blush: 231 140 120;
+  --c-blush-dark: 212 110 92;
+  --c-blush-soft: 84 38 34;
+  --c-status-untried: 42 48 84;
+
+  --shadow-card: 0 0 20px rgba(120, 140, 255, 0.15);
+  --shadow-fab: 0 0 18px rgba(232, 196, 106, 0.55);
+  --shadow-ribbon: 2px 2px 0 rgba(232, 196, 106, 0.2);
+  --grad-primary: linear-gradient(135deg, #e8c46a, #b8860b);
+}
+
+/* ============================================================
+   主題切換過渡
+   ============================================================ */
+html,
+body {
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* ============================================================
+   Body 背景層（各主題專屬，純 CSS 零圖片）
+   ============================================================ */
+
+/* 手帳紙感：點點紙紋（原 tailwind bg-paper utility 搬入）。
+   isolation 讓 ::before/::after 裝飾層（z-index:-1）能畫在
+   body 背景之上、內容之下。 */
+body {
+  isolation: isolate;
+  background-image: radial-gradient(circle at 1px 1px, rgba(74, 53, 40, 0.06) 1px, transparent 0);
+  background-size: 14px 14px;
+  background-attachment: fixed;
+}
+
+/* 糖果：全息粉彩漸層 */
+[data-theme='candy'] body {
+  background-image: linear-gradient(150deg, #ffe3f1 0%, #e3edff 38%, #e0fff4 72%, #fff5d9 100%);
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* 星空：深藍径向漸層 */
+[data-theme='night'] body {
+  background-image: radial-gradient(ellipse at 50% 0%, #232a54 0%, #0b1026 55%, #070a1a 100%);
+  background-size: cover;
+  background-attachment: fixed;
+}
+
+/* 糖果：兩朵飄浮雲（fixed 覆蓋層，不擋互動） */
+@keyframes theme-floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+[data-theme='candy'] body::before,
+[data-theme='candy'] body::after {
+  content: '';
+  position: fixed;
+  z-index: -1;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.65);
+  filter: blur(4px);
+  pointer-events: none;
+  animation: theme-floaty 6s ease-in-out infinite;
+}
+[data-theme='candy'] body::before {
+  width: 130px;
+  height: 64px;
+  top: 96px;
+  right: -30px;
+}
+[data-theme='candy'] body::after {
+  width: 90px;
+  height: 48px;
+  bottom: 140px;
+  left: -20px;
+  animation-delay: -3s;
+}
+
+/* 星空：星點層（fixed 覆蓋層）＋緩慢閃爍 */
+@keyframes theme-twinkle {
+  0%,
+  100% {
+    opacity: 0.9;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+[data-theme='night'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(1px 1px at 15% 12%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 78% 8%, #ffe9b3 50%, transparent 51%),
+    radial-gradient(1px 1px at 60% 22%, #cdd6ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 30% 38%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 90% 45%, #fff 50%, transparent 51%),
+    radial-gradient(1px 1px at 8% 60%, #ffe9b3 50%, transparent 51%),
+    radial-gradient(1px 1px at 50% 72%, #fff 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 72% 85%, #cdd6ff 50%, transparent 51%),
+    radial-gradient(1px 1px at 25% 90%, #fff 50%, transparent 51%);
+  animation: theme-twinkle 4s ease-in-out infinite;
+}
+
+/* ============================================================
+   主題特效（元件無感知，靠選擇器加料）
+   ============================================================ */
+
+/* fancy 主題：主行動色按鈕改漸層（蓋在 background-color 之上） */
+[data-theme='candy'] .bg-terracotta,
+[data-theme='night'] .bg-terracotta {
+  background-image: var(--grad-primary);
+}
+
+/* 糖果：頁面標題霓彩漸層字 */
+[data-theme='candy'] h2.serif {
+  background-image: linear-gradient(90deg, #ff8fc7, #9d8fff, #5ec8ff);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+/* 星空：頁面標題柔光 */
+[data-theme='night'] h2.serif {
+  text-shadow: 0 0 12px rgba(232, 196, 106, 0.35);
+}
+
+/* 星空：紙卡改金線描邊＋微光暈 */
+[data-theme='night'] .paper-card {
+  border-color: rgba(232, 196, 106, 0.3);
+}
+
+/* 星空彩蛋：已解鎖狀態 chip 尾端加一顆星 */
+[data-theme='night'] [data-status='UNLOCKED']::after {
+  content: '✦';
+  margin-left: 2px;
+  color: #ffe9b3;
+  text-shadow: 0 0 6px rgba(232, 196, 106, 0.8);
+}
+
+/* ============================================================
+   可近性：尊重減少動態偏好
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  [data-theme='candy'] body::before,
+  [data-theme='candy'] body::after,
+  [data-theme='night'] body::before {
+    animation: none;
+  }
+}
