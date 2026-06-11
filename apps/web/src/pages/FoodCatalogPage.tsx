@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react';
-import { Search } from 'lucide-react';
+import { Pencil, Plus, Search } from 'lucide-react';
 import { useFoods, useTrials } from '@/lib/hooks';
 import { useAppStore } from '@/lib/store';
 import { AllergyBadge } from '@/components/common/AllergyBadge';
 import { TrialStatusChip } from '@/components/common/TrialStatusChip';
 import { Spinner } from '@/components/common/Spinner';
+import { FoodFormSheet } from '@/components/foods/FoodFormSheet';
+import type { FoodItem } from '@/lib/api/foods';
 import type { components } from '@/types/api';
 
 type FoodCategory = components['schemas']['FoodCategory'];
@@ -35,6 +37,9 @@ export function FoodCatalogPage() {
   const [category, setCategory] = useState<FoodCategory | 'ALL'>('ALL');
   const [risk, setRisk] = useState<AllergyRisk | 'ALL'>('ALL');
   const [search, setSearch] = useState('');
+  const [foodForm, setFoodForm] = useState<{ open: false } | { open: true; food?: FoodItem }>({
+    open: false,
+  });
 
   const filters = useMemo(
     () => ({
@@ -60,7 +65,17 @@ export function FoodCatalogPage() {
 
   return (
     <div className="space-y-4">
-      <h2 className="serif text-xl font-semibold text-bark">食材圖鑑</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="serif text-xl font-semibold text-bark">食材圖鑑</h2>
+        <button
+          type="button"
+          onClick={() => setFoodForm({ open: true })}
+          className="flex items-center gap-1 rounded-full bg-terracotta px-3 py-1.5 text-xs font-semibold text-cream shadow-fab transition-transform active:scale-95"
+        >
+          <Plus size={14} />
+          新增
+        </button>
+      </div>
 
       <div className="relative">
         <Search
@@ -124,7 +139,7 @@ export function FoodCatalogPage() {
         {foodsResp?.data?.map((f) => {
           const status = statusByFood.get(f.id);
           return (
-            <li key={f.id}>
+            <li key={f.id} className="relative">
               <button
                 type="button"
                 onClick={() => openAdd(f.id)}
@@ -135,8 +150,25 @@ export function FoodCatalogPage() {
                   {status && <TrialStatusChip status={status} />}
                 </div>
                 <span className="serif text-base font-semibold text-bark">{f.name}</span>
-                <span className="text-[10px] tracking-widest text-bark-soft">{f.category}</span>
+                <span className="flex items-center gap-1.5 text-[10px] tracking-widest text-bark-soft">
+                  {f.category}
+                  {!f.isSystem && (
+                    <span className="rounded-full bg-sage-soft px-1.5 py-0.5 text-[9px] font-semibold tracking-normal text-sage-dark">
+                      自訂
+                    </span>
+                  )}
+                </span>
               </button>
+              {!f.isSystem && (
+                <button
+                  type="button"
+                  aria-label={`編輯 ${f.name}`}
+                  onClick={() => setFoodForm({ open: true, food: f })}
+                  className="absolute bottom-2 right-2 rounded-full border border-bark-faded/30 bg-cream p-1.5 text-bark-soft transition-colors hover:text-terracotta"
+                >
+                  <Pencil size={12} />
+                </button>
+              )}
             </li>
           );
         })}
@@ -146,6 +178,10 @@ export function FoodCatalogPage() {
         <div className="rounded-3xl border border-dashed border-bark-faded/40 bg-cream-card p-8 text-center text-sm text-bark-soft">
           沒有符合的食材
         </div>
+      )}
+
+      {foodForm.open && (
+        <FoodFormSheet food={foodForm.food} onClose={() => setFoodForm({ open: false })} />
       )}
     </div>
   );

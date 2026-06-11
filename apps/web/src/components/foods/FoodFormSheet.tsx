@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import { X } from 'lucide-react';
 import { useCreateFood, useDeleteFood, useUpdateFood } from '@/lib/hooks';
 import { ApiError } from '@/lib/api/client';
@@ -55,7 +55,7 @@ export function FoodFormSheet({ food, onClose }: Props) {
   const isEdit = !!food;
   const pending = create.isPending || update.isPending || remove.isPending;
 
-  async function submit(e: React.FormEvent) {
+  async function submit(e: FormEvent) {
     e.preventDefault();
     setError(null);
     const trimmed = name.trim();
