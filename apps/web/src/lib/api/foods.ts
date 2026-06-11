@@ -2,6 +2,8 @@ import { api } from './client';
 import type { components } from '@/types/api';
 
 export type FoodItem = components['schemas']['FoodItem'];
+export type FoodCreate = components['schemas']['FoodCreate'];
+export type FoodUpdate = components['schemas']['FoodUpdate'];
 export type FoodListResponse = components['schemas']['FoodListResponse'];
 
 export type FoodFilters = {
@@ -22,4 +24,7 @@ export const foodsApi = {
     params.set('limit', String(filters.limit ?? 100));
     return api.get<FoodListResponse>(`/foods?${params.toString()}`);
   },
+  create: (input: FoodCreate) => api.post<FoodItem>('/foods', input),
+  update: (id: string, input: FoodUpdate) => api.patch<FoodItem>(`/foods/${id}`, input),
+  remove: (id: string) => api.delete(`/foods/${id}`),
 };

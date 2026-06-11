@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { babiesApi, type BabyCreate, type BabyUpdate } from './api/babies';
-import { foodsApi, type FoodFilters } from './api/foods';
+import { foodsApi, type FoodCreate, type FoodFilters, type FoodUpdate } from './api/foods';
 import { feedingsApi, type FeedingListParams } from './api/feedings';
 import { dashboardApi } from './api/dashboard';
 import { trialsApi } from './api/trials';
@@ -92,6 +92,36 @@ export function useCreateFeeding() {
       if (data.newlyUnlockedAchievements?.length) {
         pushUnlocks(data.newlyUnlockedAchievements);
       }
+    },
+  });
+}
+
+export function useCreateFood() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: FoodCreate) => foodsApi.create(input),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['foods'] });
+    },
+  });
+}
+
+export function useUpdateFood() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (args: { id: string; input: FoodUpdate }) => foodsApi.update(args.id, args.input),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['foods'] });
+    },
+  });
+}
+
+export function useDeleteFood() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => foodsApi.remove(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['foods'] });
     },
   });
 }
