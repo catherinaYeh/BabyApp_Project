@@ -5,10 +5,20 @@ describe('useAppStore', () => {
   beforeEach(() => {
     useAppStore.setState({
       activeBabyId: null,
+      theme: 'paper',
       addFeedingSheet: { open: false },
       babyPickerOpen: false,
       pendingUnlocks: [],
     });
+  });
+
+  test('theme 預設為 paper', () => {
+    expect(useAppStore.getState().theme).toBe('paper');
+  });
+
+  test('setTheme 更新主題', () => {
+    useAppStore.getState().setTheme('night');
+    expect(useAppStore.getState().theme).toBe('night');
   });
 
   test('setActiveBabyId persists in state', () => {

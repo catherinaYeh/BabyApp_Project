@@ -1,12 +1,16 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { components } from '@/types/api';
+import type { Theme } from './theme';
 
 type Achievement = components['schemas']['Achievement'];
 
 type AppState = {
   activeBabyId: string | null;
   setActiveBabyId: (id: string | null) => void;
+
+  theme: Theme;
+  setTheme: (theme: Theme) => void;
 
   // UI overlays
   addFeedingSheet: { open: boolean; prefillFoodId?: string };
@@ -28,6 +32,9 @@ export const useAppStore = create<AppState>()(
       activeBabyId: null,
       setActiveBabyId: (id) => set({ activeBabyId: id }),
 
+      theme: 'paper',
+      setTheme: (theme) => set({ theme }),
+
       addFeedingSheet: { open: false },
       openAddFeedingSheet: (prefillFoodId) =>
         set({ addFeedingSheet: { open: true, prefillFoodId } }),
@@ -46,7 +53,7 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: 'baby-app-store',
-      partialize: (s) => ({ activeBabyId: s.activeBabyId }),
+      partialize: (s) => ({ activeBabyId: s.activeBabyId, theme: s.theme }),
     },
   ),
 );
