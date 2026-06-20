@@ -3,9 +3,10 @@ import { Plus, Trash2 } from 'lucide-react';
 import { useBabies, useDeleteBaby } from '@/lib/hooks';
 import { useAppStore } from '@/lib/store';
 import { EmptyState } from '@/components/common/EmptyState';
+import { QueryError } from '@/components/common/QueryError';
 
 export function BabiesPage() {
-  const { data, isLoading } = useBabies();
+  const { data, isLoading, isError, refetch } = useBabies();
   const activeId = useAppStore((s) => s.activeBabyId);
   const setActive = useAppStore((s) => s.setActiveBabyId);
   const del = useDeleteBaby();
@@ -24,7 +25,9 @@ export function BabiesPage() {
 
       {isLoading && <p className="text-sm text-bark-soft">載入中…</p>}
 
-      {!isLoading && (!data?.data || data.data.length === 0) && (
+      {isError && <QueryError onRetry={() => refetch()} />}
+
+      {!isLoading && !isError && (!data?.data || data.data.length === 0) && (
         <EmptyState
           icon="👶"
           title="還沒有寶寶"

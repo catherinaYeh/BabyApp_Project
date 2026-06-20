@@ -47,6 +47,27 @@ pnpm --filter @baby/api dev         # http://localhost:3000
 pnpm --filter @baby/web dev         # http://localhost:5173
 ```
 
+### 連線 Supabase（正式環境資料庫）
+
+正式環境資料庫為 Supabase 託管的 PostgreSQL。需設定**兩組**連線字串（皆用 Supabase 的 pooler 主機，IPv4 相容）：
+
+| 變數           | 用途                             | Pooler / Port                 | 額外參數                                             |
+| -------------- | -------------------------------- | ----------------------------- | ---------------------------------------------------- |
+| `DATABASE_URL` | 後端 runtime 查詢                | transaction pooler / **6543** | `?pgbouncer=true&connection_limit=1&sslmode=require` |
+| `DIRECT_URL`   | `prisma migrate` / introspection | session pooler / **5432**     | `?sslmode=require`                                   |
+
+> ⚠️ Prisma migration 引擎不支援經 transaction pooler（6543）執行，務必用 `DIRECT_URL`（5432）。
+
+設定範例見 [`apps/api/.env.example`](apps/api/.env.example)。套用 schema 與系統資料：
+
+```bash
+cd apps/api
+pnpm exec prisma migrate deploy    # 走 DIRECT_URL 套用 migration
+pnpm db:seed                       # 80 食材 + 13 徽章（idempotent）
+```
+
+Render 部署時，`DATABASE_URL` / `DIRECT_URL` 以 Dashboard secret 注入（`render.yaml` 中 `sync: false`），容器啟動會自動執行 `prisma migrate deploy`（見 `apps/api/Dockerfile` CMD）。
+
 - API: <http://localhost:3000/healthz>
 - Swagger UI: <http://localhost:3000/api/v1/docs/>
 - Web: <http://localhost:5173>

@@ -1,6 +1,7 @@
 import { useBabyAchievements } from '@/lib/hooks';
 import { useAppStore } from '@/lib/store';
 import { EmptyState } from '@/components/common/EmptyState';
+import { QueryError } from '@/components/common/QueryError';
 import { Spinner } from '@/components/common/Spinner';
 
 function formatDate(iso: string | null | undefined): string {
@@ -11,10 +12,14 @@ function formatDate(iso: string | null | undefined): string {
 
 export function AchievementsPage() {
   const activeBabyId = useAppStore((s) => s.activeBabyId);
-  const { data, isLoading } = useBabyAchievements(activeBabyId);
+  const { data, isLoading, isError, refetch } = useBabyAchievements(activeBabyId);
 
   if (!activeBabyId) {
     return <EmptyState icon="🏆" title="先選一位寶寶" description="切換寶寶後查看徽章" />;
+  }
+
+  if (isError) {
+    return <QueryError onRetry={() => refetch()} />;
   }
 
   if (isLoading || !data) {

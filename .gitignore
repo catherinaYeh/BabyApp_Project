@@ -37,6 +37,7 @@ yarn-debug.log*
 
 # Test
 .playwright/
+.playwright-mcp/
 playwright-report/
 test-results/
 
