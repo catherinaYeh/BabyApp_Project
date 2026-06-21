@@ -5,6 +5,7 @@ import { useAppStore } from '@/lib/store';
 import { AllergyBadge } from '@/components/common/AllergyBadge';
 import { TrialStatusChip } from '@/components/common/TrialStatusChip';
 import { Spinner } from '@/components/common/Spinner';
+import { QueryError } from '@/components/common/QueryError';
 import { FoodFormSheet } from '@/components/foods/FoodFormSheet';
 import type { FoodItem } from '@/lib/api/foods';
 import type { components } from '@/types/api';
@@ -52,7 +53,7 @@ export function FoodCatalogPage() {
     [category, risk, search],
   );
 
-  const { data: foodsResp, isLoading } = useFoods(filters);
+  const { data: foodsResp, isLoading, isError, refetch } = useFoods(filters);
   const activeBabyId = useAppStore((s) => s.activeBabyId);
   const openAdd = useAppStore((s) => s.openAddFeedingSheet);
   const { data: trialsResp } = useTrials(activeBabyId);
@@ -135,6 +136,8 @@ export function FoodCatalogPage() {
         </div>
       )}
 
+      {isError && <QueryError onRetry={() => refetch()} />}
+
       <ul className="grid grid-cols-2 gap-3">
         {foodsResp?.data?.map((f) => {
           const status = statusByFood.get(f.id);
@@ -174,7 +177,7 @@ export function FoodCatalogPage() {
         })}
       </ul>
 
-      {!isLoading && foodsResp?.data?.length === 0 && (
+      {!isLoading && !isError && foodsResp?.data?.length === 0 && (
         <div className="rounded-3xl border border-dashed border-bark-faded/40 bg-cream-card p-8 text-center text-sm text-bark-soft">
           沒有符合的食材
         </div>

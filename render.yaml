@@ -1,12 +1,18 @@
-# Render Blueprint — deploys the @baby/api service + a managed PostgreSQL.
+# Render Blueprint — deploys the @baby/api service. The database is now
+# Supabase-hosted PostgreSQL (no longer a Render-managed DB).
 # Docs: https://render.com/docs/blueprint-spec
 #
 # The Docker build context is the repo ROOT (the Dockerfile copies
 # pnpm-workspace.yaml / lockfile / packages), so dockerContext must be ".".
-databases:
-  - name: babyapp-db
-    databaseName: babyapp
-    plan: free # NOTE: Render 免費 Postgres 約 30 天後過期,長期建議升級或改用 Neon/Supabase
+#
+# DB connection strings are SECRETS (contain the password) and are set in the
+# Render Dashboard (sync: false) — never commit them. Use the Supabase POOLER
+# host (aws-1-<region>.pooler.supabase.com), which is IPv4-reachable from Render
+# (the direct db.<ref>.supabase.co host is IPv6-only):
+#   DATABASE_URL -> transaction pooler, port 6543, ?pgbouncer=true&connection_limit=1&sslmode=require  (runtime queries)
+#   DIRECT_URL   -> session pooler,     port 5432, ?sslmode=require                                     (prisma migrate deploy on start)
+# Migrations run automatically on container start via the Dockerfile CMD
+# (`prisma migrate deploy`), which requires DIRECT_URL.
 
 services:
   - type: web
@@ -17,11 +23,12 @@ services:
     dockerContext: .
     healthCheckPath: /healthz
     envVars:
-      # DATABASE_URL 由上面的資料庫自動注入(內部連線字串)
+      # Supabase transaction pooler (6543). Set in Dashboard — do not commit.
       - key: DATABASE_URL
-        fromDatabase:
-          name: babyapp-db
-          property: connectionString
+        sync: false
+      # Supabase session pooler (5432), used by `prisma migrate deploy`.
+      - key: DIRECT_URL
+        sync: false
       - key: NODE_ENV
         value: production
       - key: LOG_LEVEL

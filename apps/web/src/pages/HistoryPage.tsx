@@ -5,6 +5,7 @@ import { useFeedings, useFoods, useDeleteFeeding } from '@/lib/hooks';
 import { useAppStore } from '@/lib/store';
 import { AllergyBadge } from '@/components/common/AllergyBadge';
 import { EmptyState } from '@/components/common/EmptyState';
+import { QueryError } from '@/components/common/QueryError';
 import { Spinner } from '@/components/common/Spinner';
 
 type FoodItem = components['schemas']['FoodItem'];
@@ -31,10 +32,12 @@ export function HistoryPage() {
   const activeBabyId = useAppStore((s) => s.activeBabyId);
   const [view, setView] = useState<'week' | 'month' | 'all'>('week');
 
-  const { data: feedingsResp, isLoading } = useFeedings(
-    activeBabyId,
-    view === 'all' ? { limit: 100 } : { view, limit: 100 },
-  );
+  const {
+    data: feedingsResp,
+    isLoading,
+    isError,
+    refetch,
+  } = useFeedings(activeBabyId, view === 'all' ? { limit: 100 } : { view, limit: 100 });
   const { data: foodsResp } = useFoods({ limit: 100 });
   const deleteFeeding = useDeleteFeeding(activeBabyId ?? '');
 
@@ -95,7 +98,9 @@ export function HistoryPage() {
         </div>
       )}
 
-      {!isLoading && groups.length === 0 && (
+      {isError && <QueryError onRetry={() => refetch()} />}
+
+      {!isLoading && !isError && groups.length === 0 && (
         <EmptyState icon="✿" title="這段時間還沒有紀錄" description="點右下角 + 試著紀錄一筆吧" />
       )}
 
